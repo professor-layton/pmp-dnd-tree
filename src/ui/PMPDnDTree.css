@@ -172,7 +172,7 @@ Place your custom CSS here
 .tree-row[data-level="0"] .tree-node-title {
     font-weight: 700;
     color: #000;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .tree-row[data-level="1"] .tree-node-title {
@@ -190,7 +190,7 @@ Place your custom CSS here
 .tree-row[data-level="3"] .tree-node-title {
     font-weight: 500;
     color: #555;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 /* Responsive adjustments */
