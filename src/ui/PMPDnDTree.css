@@ -65,8 +65,43 @@ Place your custom CSS here
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.tree-row:last-child {
-    border: 1px solid #e1e5e9;
+.tree-row.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tree-row.drop-target {
+    background-color: #e3f2fd !important;
+    border-color: #2196f3 !important;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+
+.tree-row.drop-target::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #2196f3;
+    z-index: 10;
+}
+
+.tree-row.drop-target.drop-before::before {
+    top: -1px;
+}
+
+.tree-row.drop-target.drop-after::before {
+    bottom: -1px;
+}
+
+.drag-enabled .tree-row {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.drag-enabled .tree-row:hover .drag-handle {
+    opacity: 1;
 }
 
 .tree-cell {
@@ -137,6 +172,27 @@ Place your custom CSS here
     width: 20px;
     height: 20px;
     display: inline-block;
+}
+
+.drag-handle {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    cursor: grab;
+    font-size: 10px;
+    line-height: 1;
+    user-select: none;
+}
+
+.drag-handle:hover {
+    color: #666;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
 }
 
 .tree-node-content {

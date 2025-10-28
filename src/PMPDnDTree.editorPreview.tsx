@@ -14,12 +14,18 @@ export function preview({}: PMPDnDTreePreviewProps): ReactElement {
         console.log("Preview - Node selected:", nodeId, selected);
     };
 
+    const handleNodeMove = (draggedNodeId: string, targetNodeId: string, position: 'before' | 'after' | 'inside') => {
+        console.log("Preview - Node moved:", draggedNodeId, position, targetNodeId);
+    };
+
     return (
         <div className="pmp-dnd-tree-widget">
             <TreeTable 
                 data={sampleTreeData} 
                 onNodeToggle={handleNodeToggle}
                 onNodeSelect={handleNodeSelect}
+                onNodeMove={handleNodeMove}
+                enableDragDrop={true}
                 className="group-plants-tree"
             />
         </div>
