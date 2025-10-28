@@ -1,13 +1,15 @@
 # PMP DnD Tree Widget
 
-A hierarchical tree table widget for Mendix applications that displays data in an expandable/collapsible tree structure with checkboxes, detailed descriptions, UUID information, and **drag-and-drop functionality** for tree restructuring.
+A hierarchical tree table widget for Mendix applications that displays data in an expandable/collapsible tree structure with checkboxes, detailed descriptions, UUID information, and **drag-and-drop functionality** for tree restructuring. The widget is designed for **single-root tree structures** where there is exactly one root node with multiple levels of child nodes.
 
 ## Features
 
+- **Single Root Architecture**: Designed for trees with exactly one root node
 - **Hierarchical Display**: Shows data in a multi-level tree structure
 - **Expandable/Collapsible Nodes**: Click on parent nodes to expand or collapse child nodes
 - **Checkbox Selection**: Each row includes a checkbox for item selection
 - **Drag & Drop Restructuring**: Move non-root nodes to reorganize the tree structure
+- **Root Node Identification**: Root node is clearly marked with a "ROOT" tag
 - **Rich Content Display**: Shows group name, description, and UUID for each item
 - **Visual Indentation**: Each level is visually indented to show hierarchy
 - **Enhanced Row Height**: Taller rows accommodate multiple lines of information
@@ -17,39 +19,39 @@ A hierarchical tree table widget for Mendix applications that displays data in a
 ## Drag & Drop Functionality
 
 ### What You Can Do
-- **Drag any non-root node** (root nodes cannot be moved)
+- **Drag any non-root node** (the single root node cannot be moved)
 - **Drop in three positions**:
   - **Before**: Place the node before the target node at the same level
   - **After**: Place the node after the target node at the same level  
   - **Inside**: Make the node a child of the target node
 
 ### Example Usage
+Single root tree restructuring:
 ```
 Original Tree:
-☐ ▼ Marketing
+☐ ▼ Platform Group ROOT
   ☐ ▶ Digital Marketing
     ☐ • Social Media
     ☐ • SEO
   ☐ ▶ Traditional Marketing
-☐ ▼ Sales
-  ☐ ▶ Inside Sales
+  ☐ ▶ Sales Division
 
-After dragging "Social Media" inside "Sales":
-☐ ▼ Marketing
+After dragging "Social Media" inside "Sales Division":
+☐ ▼ Platform Group ROOT
   ☐ ▶ Digital Marketing
     ☐ • SEO
   ☐ ▶ Traditional Marketing
-☐ ▼ Sales
-  ☐ ▶ Inside Sales
-  ☐ • Social Media
+  ☐ ▶ Sales Division
+    ☐ • Social Media
 ```
 
 ### Drag & Drop Restrictions
-- ✅ Only non-root nodes can be dragged
+- ✅ Only non-root nodes can be dragged (maintains single root structure)
 - ❌ Cannot drop a parent node into its own children (prevents circular dependencies)
 - ❌ Cannot drop a node onto itself
 - ✅ Visual indicators show valid drop zones
 - ✅ Automatic level recalculation after drops
+- ✅ Preserves single root architecture
 
 ## Components
 

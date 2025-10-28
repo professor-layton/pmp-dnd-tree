@@ -123,7 +123,12 @@ function TreeRow({
                         )}
                     </div>
                     <div className="tree-node-content">
-                        <div className="tree-node-title">{node.name}</div>
+                        <div className="tree-node-title">
+                            {node.name}
+                            {node.level === 0 && (
+                                <span className="root-tag">ROOT</span>
+                            )}
+                        </div>
                         {node.description && (
                             <div className="tree-node-description">{node.description}</div>
                         )}
