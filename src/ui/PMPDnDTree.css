@@ -145,7 +145,7 @@ Place your custom CSS here
 }
 
 .tree-node-title {
-    font-weight: 600;
+    font-weight: 700;
     color: #1a1a1a;
     font-size: 14px;
     line-height: 1.4;
@@ -176,19 +176,19 @@ Place your custom CSS here
 }
 
 .tree-row[data-level="1"] .tree-node-title {
-    font-weight: 600;
+    font-weight: 700;
     color: #1a1a1a;
     font-size: 14px;
 }
 
 .tree-row[data-level="2"] .tree-node-title {
-    font-weight: 500;
+    font-weight: 700;
     color: #333;
     font-size: 14px;
 }
 
 .tree-row[data-level="3"] .tree-node-title {
-    font-weight: 500;
+    font-weight: 700;
     color: #555;
     font-size: 14px;
 }
