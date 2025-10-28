@@ -10,6 +10,8 @@ export interface TreeNode {
     parentId?: string;
     isDragging?: boolean;
     isDropTarget?: boolean;
+    appCount?: number;
+    resourceCount?: number;
 }
 
 export interface DragDropContext {

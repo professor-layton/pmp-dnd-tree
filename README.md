@@ -11,6 +11,7 @@ A hierarchical tree table widget for Mendix applications that displays data in a
 - **Drag & Drop Restructuring**: Move non-root nodes to reorganize the tree structure
 - **Root Node Identification**: Root node is clearly marked with a "ROOT" tag
 - **Rich Content Display**: Shows group name, description, and UUID for each item
+- **Statistics Display**: Shows app count (📱) and resource count (🗃️) for each group on the right side
 - **Visual Indentation**: Each level is visually indented to show hierarchy
 - **Enhanced Row Height**: Taller rows accommodate multiple lines of information
 - **Responsive Design**: Clean, modern table design with hover effects
@@ -80,23 +81,34 @@ interface TreeNode {
     parentId?: string;      // Parent node ID
     isDragging?: boolean;   // Currently being dragged
     isDropTarget?: boolean; // Valid drop target
+    appCount?: number;      // Number of apps in this group
+    resourceCount?: number; // Number of resources in this group
 }
 ```
 
 ## Visual Structure with Drag Handles
 
-The tree displays data with rich information layout and drag handles:
+The tree displays data with rich information layout, drag handles, and statistics:
 ```
-☐ ⋮⋮ ▼ Platform Group
-       1 line description about this Platform group.
-       UUID: 123456-789012-345678
-  ☐ ⋮⋮ ▶ Digital Marketing
+☐ ⋮⋮ ▼ Platform Group ROOT                              📱 12  🗃️ 38
+       Platform development and marketing initiatives.
+       UUID: 123456-789012-345679
+  ☐ ⋮⋮ ▶ Digital Marketing                             📱 8   🗃️ 24
          Comprehensive digital marketing strategies...
-         UUID: 123456-789012-345679
-    ☐ ⋮⋮ • Social Media
+         UUID: 123456-789012-345680
+    ☐ ⋮⋮ • Social Media                                📱 3   🗃️ 8
            Social media management and content creation.
-           UUID: 123456-789012-345680
+           UUID: 123456-789012-345681
+    ☐ ⋮⋮ • SEO Optimization                            📱 2   🗃️ 6
+           Search engine optimization and content strategy.
+           UUID: 123456-789012-345682
 ```
+
+### Statistics Display
+- **📱 App Count**: Shows the number of applications associated with each group
+- **🗃️ Resource Count**: Shows the number of resources associated with each group
+- **Positioning**: Statistics are displayed on the right side of each row
+- **Styling**: Each statistic is shown in a badge-like container with icon and count
 
 ## Key Features
 

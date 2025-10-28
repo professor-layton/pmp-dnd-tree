@@ -1,6 +1,8 @@
-import { ReactElement, createElement, useState, useCallback } from "react";
+import { ReactElement, createElement, useState, useCallback, useMemo, useEffect } from "react";
 import { TreeNode, TreeTableProps, DragDropContext } from "../types/TreeTypes";
 import { canDragNode, canDropNode } from "../utils/dragDropUtils";
+import { AiOutlineAppstoreAdd } from "react-icons/ai";
+import { GrResources } from "react-icons/gr";
 
 function flattenTreeData(nodes: TreeNode[], expandedNodes: Set<string>): TreeNode[] {
     const result: TreeNode[] = [];
@@ -16,6 +18,22 @@ function flattenTreeData(nodes: TreeNode[], expandedNodes: Set<string>): TreeNod
     
     traverse(nodes);
     return result;
+}
+
+function getAllParentNodeIds(nodes: TreeNode[]): Set<string> {
+    const parentIds = new Set<string>();
+    
+    function traverse(nodeArray: TreeNode[]) {
+        for (const node of nodeArray) {
+            if (node.children && node.children.length > 0) {
+                parentIds.add(node.id);
+                traverse(node.children);
+            }
+        }
+    }
+    
+    traverse(nodes);
+    return parentIds;
 }
 
 interface TreeRowProps {
@@ -123,18 +141,40 @@ function TreeRow({
                         )}
                     </div>
                     <div className="tree-node-content">
-                        <div className="tree-node-title">
-                            {node.name}
-                            {node.level === 0 && (
-                                <span className="root-tag">ROOT</span>
-                            )}
+                        <div className="tree-node-main">
+                            <div className="tree-node-info">
+                                <div className="tree-node-title">
+                                    {node.name}
+                                    {node.level === 0 && (
+                                        <span className="root-tag">ROOT</span>
+                                    )}
+                                </div>
+                                {node.description && (
+                                    <div className="tree-node-description">{node.description}</div>
+                                )}
+                                {node.uuid && (
+                                    <div className="tree-node-uuid">UUID: {node.uuid}</div>
+                                )}
+                            </div>
+                            <div className="tree-node-stats">
+                                {typeof node.appCount === 'number' && (
+                                    <div className="stat-item">
+                                        <span className="stat-icon app-icon">
+                                            <AiOutlineAppstoreAdd />
+                                        </span>
+                                        <span className="stat-count">{node.appCount}</span>
+                                    </div>
+                                )}
+                                {typeof node.resourceCount === 'number' && (
+                                    <div className="stat-item">
+                                        <span className="stat-icon resource-icon">
+                                            <GrResources />
+                                        </span>
+                                        <span className="stat-count">{node.resourceCount}</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        {node.description && (
-                            <div className="tree-node-description">{node.description}</div>
-                        )}
-                        {node.uuid && (
-                            <div className="tree-node-uuid">UUID: {node.uuid}</div>
-                        )}
                     </div>
                 </div>
             </td>
@@ -150,13 +190,21 @@ export function TreeTable({
     className = "",
     enableDragDrop = false
 }: TreeTableProps): ReactElement {
-    const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+    // 计算所有父节点ID用于默认展开
+    const defaultExpandedNodes = useMemo(() => getAllParentNodeIds(data), [data]);
+    
+    const [expandedNodes, setExpandedNodes] = useState<Set<string>>(defaultExpandedNodes);
     const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
     const [dragDropContext, setDragDropContext] = useState<DragDropContext>({
         draggedNode: null,
         dropTargetNode: null,
         dropPosition: null
     });
+
+    // 当data变化时，更新expandedNodes为全部展开
+    useEffect(() => {
+        setExpandedNodes(defaultExpandedNodes);
+    }, [defaultExpandedNodes]);
 
     const handleToggle = useCallback((nodeId: string) => {
         setExpandedNodes(prev => {

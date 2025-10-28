@@ -7,6 +7,8 @@ export const sampleTreeData: TreeNode[] = [
         description: "Company organizational structure with all departments.",
         uuid: "123456-789012-345678",
         level: 0,
+        appCount: 45,
+        resourceCount: 128,
         children: [
             {
                 id: "1-1",
@@ -15,6 +17,8 @@ export const sampleTreeData: TreeNode[] = [
                 uuid: "123456-789012-345679",
                 level: 1,
                 parentId: "1",
+                appCount: 12,
+                resourceCount: 38,
                 children: [
                     {
                         id: "1-1-1",
@@ -23,6 +27,8 @@ export const sampleTreeData: TreeNode[] = [
                         uuid: "123456-789012-345680",
                         level: 2,
                         parentId: "1-1",
+                        appCount: 8,
+                        resourceCount: 24,
                         children: [
                             {
                                 id: "1-1-1-1",
@@ -30,7 +36,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Social media management and content creation.",
                                 uuid: "123456-789012-345681",
                                 level: 3,
-                                parentId: "1-1-1"
+                                parentId: "1-1-1",
+                                appCount: 3,
+                                resourceCount: 8
                             },
                             {
                                 id: "1-1-1-2",
@@ -38,7 +46,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Search engine optimization and content strategy.",
                                 uuid: "123456-789012-345682",
                                 level: 3,
-                                parentId: "1-1-1"
+                                parentId: "1-1-1",
+                                appCount: 2,
+                                resourceCount: 6
                             },
                             {
                                 id: "1-1-1-3",
@@ -46,7 +56,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Automated email campaigns and customer engagement.",
                                 uuid: "123456-789012-345683",
                                 level: 3,
-                                parentId: "1-1-1"
+                                parentId: "1-1-1",
+                                appCount: 3,
+                                resourceCount: 10
                             }
                         ]
                     },
@@ -57,6 +69,8 @@ export const sampleTreeData: TreeNode[] = [
                         uuid: "123456-789012-345684",
                         level: 2,
                         parentId: "1-1",
+                        appCount: 4,
+                        resourceCount: 14,
                         children: [
                             {
                                 id: "1-1-2-1",
@@ -64,7 +78,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Magazine, newspaper, and print media campaigns.",
                                 uuid: "123456-789012-345685",
                                 level: 3,
-                                parentId: "1-1-2"
+                                parentId: "1-1-2",
+                                appCount: 2,
+                                resourceCount: 7
                             },
                             {
                                 id: "1-1-2-2",
@@ -72,7 +88,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Broadcast media advertising and sponsorships.",
                                 uuid: "123456-789012-345686",
                                 level: 3,
-                                parentId: "1-1-2"
+                                parentId: "1-1-2",
+                                appCount: 2,
+                                resourceCount: 7
                             }
                         ]
                     }
@@ -85,6 +103,8 @@ export const sampleTreeData: TreeNode[] = [
                 uuid: "123456-789012-345687",
                 level: 1,
                 parentId: "1",
+                appCount: 15,
+                resourceCount: 42,
                 children: [
                     {
                         id: "1-2-1",
@@ -93,6 +113,8 @@ export const sampleTreeData: TreeNode[] = [
                         uuid: "123456-789012-345688",
                         level: 2,
                         parentId: "1-2",
+                        appCount: 8,
+                        resourceCount: 22,
                         children: [
                             {
                                 id: "1-2-1-1",
@@ -100,7 +122,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Prospect identification and initial outreach.",
                                 uuid: "123456-789012-345689",
                                 level: 3,
-                                parentId: "1-2-1"
+                                parentId: "1-2-1",
+                                appCount: 4,
+                                resourceCount: 11
                             },
                             {
                                 id: "1-2-1-2",
@@ -108,7 +132,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Qualified lead nurturing and conversion.",
                                 uuid: "123456-789012-345690",
                                 level: 3,
-                                parentId: "1-2-1"
+                                parentId: "1-2-1",
+                                appCount: 4,
+                                resourceCount: 11
                             }
                         ]
                     },
@@ -119,6 +145,8 @@ export const sampleTreeData: TreeNode[] = [
                         uuid: "123456-789012-345691",
                         level: 2,
                         parentId: "1-2",
+                        appCount: 7,
+                        resourceCount: 20,
                         children: [
                             {
                                 id: "1-2-2-1",
@@ -126,7 +154,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Large account management and enterprise solutions.",
                                 uuid: "123456-789012-345692",
                                 level: 3,
-                                parentId: "1-2-2"
+                                parentId: "1-2-2",
+                                appCount: 7,
+                                resourceCount: 20
                             }
                         ]
                     }
@@ -139,6 +169,8 @@ export const sampleTreeData: TreeNode[] = [
                 uuid: "123456-789012-345693",
                 level: 1,
                 parentId: "1",
+                appCount: 18,
+                resourceCount: 48,
                 children: [
                     {
                         id: "1-3-1",
@@ -147,6 +179,8 @@ export const sampleTreeData: TreeNode[] = [
                         uuid: "123456-789012-345694",
                         level: 2,
                         parentId: "1-3",
+                        appCount: 10,
+                        resourceCount: 24,
                         children: [
                             {
                                 id: "1-3-1-1",
@@ -154,7 +188,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "React.js application development and maintenance.",
                                 uuid: "123456-789012-345695",
                                 level: 3,
-                                parentId: "1-3-1"
+                                parentId: "1-3-1",
+                                appCount: 6,
+                                resourceCount: 15
                             },
                             {
                                 id: "1-3-1-2",
@@ -162,7 +198,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "iOS and Android mobile application development.",
                                 uuid: "123456-789012-345696",
                                 level: 3,
-                                parentId: "1-3-1"
+                                parentId: "1-3-1",
+                                appCount: 4,
+                                resourceCount: 9
                             }
                         ]
                     },
@@ -173,6 +211,8 @@ export const sampleTreeData: TreeNode[] = [
                         uuid: "123456-789012-345697",
                         level: 2,
                         parentId: "1-3",
+                        appCount: 8,
+                        resourceCount: 24,
                         children: [
                             {
                                 id: "1-3-2-1",
@@ -180,7 +220,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "RESTful API design and microservices architecture.",
                                 uuid: "123456-789012-345698",
                                 level: 3,
-                                parentId: "1-3-2"
+                                parentId: "1-3-2",
+                                appCount: 4,
+                                resourceCount: 12
                             },
                             {
                                 id: "1-3-2-2",
@@ -188,7 +230,9 @@ export const sampleTreeData: TreeNode[] = [
                                 description: "Cloud infrastructure and DevOps operations.",
                                 uuid: "123456-789012-345699",
                                 level: 3,
-                                parentId: "1-3-2"
+                                parentId: "1-3-2",
+                                appCount: 4,
+                                resourceCount: 12
                             }
                         ]
                     }
@@ -201,6 +245,8 @@ export const sampleTreeData: TreeNode[] = [
                 uuid: "123456-789012-345700",
                 level: 1,
                 parentId: "1",
+                appCount: 6,
+                resourceCount: 18,
                 children: [
                     {
                         id: "1-4-1",
@@ -208,7 +254,9 @@ export const sampleTreeData: TreeNode[] = [
                         description: "Talent acquisition and hiring process management.",
                         uuid: "123456-789012-345701",
                         level: 2,
-                        parentId: "1-4"
+                        parentId: "1-4",
+                        appCount: 3,
+                        resourceCount: 9
                     },
                     {
                         id: "1-4-2",
@@ -216,7 +264,9 @@ export const sampleTreeData: TreeNode[] = [
                         description: "Employee skill development and career advancement programs.",
                         uuid: "123456-789012-345702",
                         level: 2,
-                        parentId: "1-4"
+                        parentId: "1-4",
+                        appCount: 3,
+                        resourceCount: 9
                     }
                 ]
             }
