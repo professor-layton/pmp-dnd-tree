@@ -68,12 +68,16 @@ Place your custom CSS here
     opacity: 0.5;
     transform: scale(0.98);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #f8f9fa !important;
+    border-color: #ccc !important;
 }
 
 .tree-row.drop-target {
     background-color: #e3f2fd !important;
     border-color: #2196f3 !important;
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+    transform: none !important;
+    opacity: 1 !important;
 }
 
 .tree-row.drop-target::before {
@@ -94,6 +98,13 @@ Place your custom CSS here
     bottom: -1px;
 }
 
+/* 防止拖拽过程中的样式冲突 */
+.tree-row.dragging.drop-target {
+    background-color: #fff3cd !important;
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+}
+
 .drag-enabled .tree-row {
     position: relative;
     transition: all 0.2s ease;
@@ -101,6 +112,11 @@ Place your custom CSS here
 
 .drag-enabled .tree-row:hover .drag-handle {
     opacity: 1;
+}
+
+/* 改进拖拽指示器 */
+.drag-enabled .tree-row:hover {
+    border-color: #b3d4fc;
 }
 
 .tree-cell {

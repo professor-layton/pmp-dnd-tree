@@ -46,8 +46,9 @@ interface TreeRowProps {
     dragDropContext: DragDropContext;
     onDragStart: (node: TreeNode) => void;
     onDragOver: (e: React.DragEvent, node: TreeNode) => void;
-    onDragLeave: () => void;
+    onDragLeave: (e: React.DragEvent) => void;
     onDrop: (e: React.DragEvent, node: TreeNode) => void;
+    onDragEnd: () => void;
 }
 
 function TreeRow({ 
@@ -61,7 +62,8 @@ function TreeRow({
     onDragStart,
     onDragOver,
     onDragLeave,
-    onDrop
+    onDrop,
+    onDragEnd
 }: TreeRowProps): ReactElement {
     const hasChildren = node.children && node.children.length > 0;
     const indentLevel = node.level * 20; // 20px per level
@@ -94,12 +96,20 @@ function TreeRow({
         }
     }, [enableDragDrop, dragDropContext.draggedNode, node, onDragOver]);
 
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        onDragLeave(e);
+    }, [onDragLeave]);
+
     const handleDrop = useCallback((e: React.DragEvent) => {
         if (enableDragDrop) {
             e.preventDefault();
             onDrop(e, node);
         }
     }, [enableDragDrop, node, onDrop]);
+
+    const handleDragEnd = useCallback(() => {
+        onDragEnd();
+    }, [onDragEnd]);
 
     const rowClassName = `tree-row ${isDragging ? 'dragging' : ''} ${isDropTarget ? 'drop-target' : ''}`;
 
@@ -110,8 +120,9 @@ function TreeRow({
             draggable={isDraggable}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
-            onDragLeave={onDragLeave}
+            onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onDragEnd={handleDragEnd}
         >
             <td className="tree-cell tree-cell-content">
                 <div className="tree-node-wrapper" style={{ paddingLeft: indentLevel }}>
@@ -267,32 +278,68 @@ export function TreeTable({
                 dropTargetNode: node,
                 dropPosition: position
             }));
+        } else {
+            // 如果不能drop，清除drop target状态
+            setDragDropContext(prev => ({
+                ...prev,
+                dropTargetNode: null,
+                dropPosition: null
+            }));
         }
     }, [dragDropContext.draggedNode]);
 
-    const handleDragLeave = useCallback(() => {
-        setDragDropContext(prev => ({
-            ...prev,
-            dropTargetNode: null,
-            dropPosition: null
-        }));
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        // 只有当鼠标真正离开当前元素时才清除状态
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+            setDragDropContext(prev => ({
+                ...prev,
+                dropTargetNode: null,
+                dropPosition: null
+            }));
+        }
     }, []);
 
-    const handleDrop = useCallback((_e: React.DragEvent, targetNode: TreeNode) => {
-        if (!dragDropContext.draggedNode || !dragDropContext.dropPosition) return;
+    const handleDrop = useCallback((e: React.DragEvent, targetNode: TreeNode) => {
+        e.preventDefault();
+        
+        if (!dragDropContext.draggedNode || !dragDropContext.dropPosition) {
+            // 重置拖拽状态
+            setDragDropContext({
+                draggedNode: null,
+                dropTargetNode: null,
+                dropPosition: null
+            });
+            return;
+        }
         
         if (canDropNode(dragDropContext.draggedNode, targetNode, dragDropContext.dropPosition)) {
             if (onNodeMove) {
                 onNodeMove(dragDropContext.draggedNode.id, targetNode.id, dragDropContext.dropPosition);
             }
+        } else {
+            console.log('Drop operation canceled: invalid position');
         }
         
+        // 无论是否成功，都重置拖拽状态
         setDragDropContext({
             draggedNode: null,
             dropTargetNode: null,
             dropPosition: null
         });
     }, [dragDropContext, onNodeMove]);
+
+    // 添加dragend事件处理，确保拖拽状态总是被重置
+    const handleDragEnd = useCallback(() => {
+        setDragDropContext({
+            draggedNode: null,
+            dropTargetNode: null,
+            dropPosition: null
+        });
+    }, []);
 
     const flattenedData = flattenTreeData(data, expandedNodes);
 
@@ -319,6 +366,7 @@ export function TreeTable({
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
+                            onDragEnd={handleDragEnd}
                         />
                     ))}
                 </tbody>

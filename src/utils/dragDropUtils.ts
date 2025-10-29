@@ -17,10 +17,37 @@ export function canDropNode(draggedNode: TreeNode, targetNode: TreeNode, positio
         return false;
     }
     
+    // 检查是否试图移动到相同的位置
+    if (isSamePosition(draggedNode, targetNode, position)) {
+        return false;
+    }
+    
     // 其他位置限制可以根据需要添加
     console.log(`Checking drop: ${draggedNode.name} ${position} ${targetNode.name}`);
     
     return true;
+}
+
+// 检查是否移动到相同位置
+function isSamePosition(draggedNode: TreeNode, targetNode: TreeNode, position: 'before' | 'after' | 'inside'): boolean {
+    // 如果是inside位置，检查目标节点是否已经是拖拽节点的父节点
+    if (position === 'inside') {
+        return draggedNode.parentId === targetNode.id;
+    }
+    
+    // 如果是before/after位置，检查是否在同一个父节点下的相邻位置
+    if (position === 'before' || position === 'after') {
+        // 必须有相同的父节点
+        if (draggedNode.parentId !== targetNode.parentId) {
+            return false;
+        }
+        
+        // 如果拖拽节点就在目标节点的前面或后面，则认为是相同位置
+        return (position === 'after' && draggedNode.id === targetNode.id) || 
+               (position === 'before' && draggedNode.id === targetNode.id);
+    }
+    
+    return false;
 }
 
 // 检查target是否是source的后代节点
