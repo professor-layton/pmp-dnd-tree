@@ -93,23 +93,19 @@ export async function fetchGroupsFromMendix(): Promise<MendixGroup[]> {
         ]);
         const mapGroup = new Map(groups.map(g => [g.getGuid() as string, g]));
         const mapMetrics = new Map(metrics.map(m => [m.getGuid() as string, m]));
-        const mapGroupToMetrics = new Map(groups.map(g => [
-            g.getGuid() as string,
-            g.getReference("ATM_Company.GroupMetrics") as string
-        ]));
         const result: MendixGroup[] = groups.map((g) => {
-            const m = mapMetrics.get(mapGroupToMetrics.get(g.getGuid() as string) as string);
             const pg = mapGroup.get(g.getReference("ATM_Company.ParentGroup") as string);
+            const m = mapMetrics.get(g.getReference("ATM_Company.Group_Metrics") as string);
             return {
                 Name: g.get("Name") as string,
                 Parent: pg ? (pg.get("Name") as string) : "N/A",
                 Description: g.get("Description") as string,
                 UUID: g.get("UUID") as string,
-                AppCount: m ? (m.get("TotalResource") as number) : 0,
-                ResourceCount: m ? (m.get("TotalNSPurpose") as number) : 0
+                AppCount: m ? Number(m.get("TotalResource") ?? 0) : 0,
+                ResourceCount: m ? Number(m.get("TotalNSPurpose") ?? 0) : 0
             };
         });
-        console.log(`Successfully Loaded ${result.length} groups`);
+        console.info(`Successfully Loaded ${result.length} groups`);
         return result;
     } catch (err) {
         console.error(`Failed to fetch groups from database: ${err}`);
