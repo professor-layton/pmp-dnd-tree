@@ -11,7 +11,9 @@ import "./ui/PMPDnDTree.css";
 
 export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactElement {
     const [treeData, setTreeData] = useState<TreeNode[]>(sampleTreeData);
+    const [filteredTreeData, setFilteredTreeData] = useState<TreeNode[]>(sampleTreeData);
     const [isLoadingMendixData, setIsLoadingMendixData] = useState(false);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     // 可选：从Mendix加载真实数据的函数
     const loadMendixData = useCallback(async () => {
@@ -20,12 +22,94 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
             const mendixGroups = await fetchGroupsFromMendix();
             const builtTreeData = buildTreeFromMendixGroups(mendixGroups);
             setTreeData(builtTreeData);
+            setFilteredTreeData(builtTreeData);
             console.log("Successfully loaded and built tree from Mendix data");
         } catch (error) {
             console.error("Error loading Mendix data:", error);
             // 发生错误时回退到示例数据
         } finally {
             setIsLoadingMendixData(false);
+        }
+    }, []);
+
+    // 搜索功能
+    const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const term = event.target.value;
+        setSearchTerm(term);
+        
+        if (!term.trim()) {
+            setFilteredTreeData(treeData);
+            return;
+        }
+
+        // 递归搜索匹配的节点
+        const filterTree = (nodes: TreeNode[]): TreeNode[] => {
+            const filtered: TreeNode[] = [];
+            
+            for (const node of nodes) {
+                const matchesSearch = node.name.toLowerCase().includes(term.toLowerCase());
+                const filteredChildren = node.children ? filterTree(node.children) : [];
+                
+                if (matchesSearch || filteredChildren.length > 0) {
+                    filtered.push({
+                        ...node,
+                        children: filteredChildren
+                    });
+                }
+            }
+            
+            return filtered;
+        };
+
+        setFilteredTreeData(filterTree(treeData));
+    }, [treeData]);
+
+    // Create Group 按钮处理
+    const handleCreateGroup = useCallback(() => {
+        console.log("Create Group clicked");
+        
+        if (mx.ui.openForm) {
+            const formPath = "ATM_Company/Group_NewEdit.page.xml";
+            try {
+                mx.ui.openForm(formPath, {
+                    location: "content",
+                    callback: (form: any) => {
+                        console.log("Create Group form opened:", form);
+                    },
+                    error: (error: any) => {
+                        console.error("Error opening Create Group form:", error);
+                    }
+                });
+            } catch (error) {
+                console.error("Failed to open Create Group form:", error);
+            }
+        } else {
+            console.warn("Mendix platform API not available");
+            alert("Create Group functionality");
+        }
+    }, []);
+
+    // Edit Group Hierarchy 按钮处理
+    const handleEditHierarchy = useCallback(() => {
+        console.log("Edit Group Hierarchy clicked");
+        
+        if (mx.ui.openForm) {
+            const formPath = "ATM_Company/EnhancedGroup_Edit.page.xml";
+            try {
+                mx.ui.openForm(formPath, {
+                    location: "content",
+                    callback: (form: any) => {
+                        console.log("Edit Group Hierarchy form opened:", form);
+                    },
+                    error: (error: any) => {
+                        console.error("Error opening Edit Group Hierarchy form:", error);
+                    }
+                });
+            } catch (error) {
+                console.error("Failed to open Edit Group Hierarchy form:", error);
+            }
+        } else {
+            console.warn("Mendix platform API not available");
         }
     }, []);
 
@@ -83,8 +167,32 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
         const newTreeData = moveNode(treeData, draggedNodeId, targetNodeId, position);
         setTreeData(newTreeData);
         
+        // 如果有搜索词，重新应用过滤
+        if (searchTerm.trim()) {
+            const filterTree = (nodes: TreeNode[]): TreeNode[] => {
+                const filtered: TreeNode[] = [];
+                
+                for (const node of nodes) {
+                    const matchesSearch = node.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    const filteredChildren = node.children ? filterTree(node.children) : [];
+                    
+                    if (matchesSearch || filteredChildren.length > 0) {
+                        filtered.push({
+                            ...node,
+                            children: filteredChildren
+                        });
+                    }
+                }
+                
+                return filtered;
+            };
+            setFilteredTreeData(filterTree(newTreeData));
+        } else {
+            setFilteredTreeData(newTreeData);
+        }
+        
         console.log("Tree restructured successfully");
-    }, [treeData]);
+    }, [treeData, searchTerm]);
 
     return (
         <div className="pmp-dnd-tree-widget">
@@ -108,8 +216,73 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
                     Click to build tree from Mendix Group entities
                 </span>
             </div>
+            
+            {/* 工具栏 */}
+            <div className="tree-toolbar" style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                marginBottom: '16px',
+                backgroundColor: "white",
+            }}>
+                {/* 左侧：搜索栏 */}
+                <div className="search-container" style={{ flex: '0 0 300px' }}>
+                    <input
+                        type="text"
+                        placeholder="Search groups by name..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid #d0d7de',
+                            borderRadius: '4px',
+                            fontSize: '14px',
+                            backgroundColor: 'white',
+                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                        }}
+                    />
+                </div>
+                
+                {/* 右侧：按钮组 */}
+                <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                        onClick={handleEditHierarchy}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: 'white',
+                            color: '#007bff',
+                            border: '1px solid #007bff',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '400',
+                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                        }}
+                    >
+                        Edit Group Hierarchy
+                    </button>
+                    <button
+                        onClick={handleCreateGroup}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '400',
+                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                        }}
+                    >
+                        Create Group
+                    </button>
+                </div>
+            </div>
+            
             <TreeTable 
-                data={treeData} 
+                data={filteredTreeData} 
                 onNodeToggle={handleNodeToggle}
                 onNodeSelect={handleNodeSelect}
                 onNodeClick={handleNodeClick}
