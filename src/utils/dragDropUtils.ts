@@ -17,6 +17,15 @@ export function canDropNode(draggedNode: TreeNode, targetNode: TreeNode, positio
         return false;
     }
     
+    // 特殊规则：防止创建多个Root节点
+    if (position === 'before' || position === 'after') {
+        // 如果目标节点是Root节点（level 0），不允许before/after操作
+        // 这样可以防止创建多个Root节点
+        if (targetNode.level === 0) {
+            return false;
+        }
+    }
+    
     // 检查是否试图移动到相同的位置
     if (isSamePosition(draggedNode, targetNode, position)) {
         return false;

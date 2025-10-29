@@ -65,11 +65,19 @@ Place your custom CSS here
 }
 
 .tree-row.dragging {
-    opacity: 0.5;
-    transform: scale(0.98);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-color: #f8f9fa !important;
-    border-color: #ccc !important;
+    opacity: 0.8;
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff !important;
+    border: 1px solid #d0d7de !important;
+    border-radius: 6px;
+    z-index: 1000;
+    position: relative;
+    /* 防止宽度变化 */
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
 }
 
 .tree-row.drop-target {
@@ -105,9 +113,14 @@ Place your custom CSS here
     box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
 }
 
+/* 确保拖拽时的布局稳定性 */
 .drag-enabled .tree-row {
     position: relative;
     transition: all 0.2s ease;
+    /* 防止布局跳动 */
+    width: 100%;
+    display: table-row;
+    table-layout: fixed;
 }
 
 .drag-enabled .tree-row:hover .drag-handle {
@@ -117,6 +130,50 @@ Place your custom CSS here
 /* 改进拖拽指示器 */
 .drag-enabled .tree-row:hover {
     border-color: #b3d4fc;
+}
+
+/* 确保表格布局稳定 */
+.tree-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+/* 确保单元格宽度稳定 */
+.tree-cell {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 防止拖拽时内容溢出 */
+.tree-node-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible; /* 改为visible，确保内容完全显示 */
+}
+
+/* 确保拖拽时所有内容保持可见 */
+.tree-row.dragging .tree-node-content,
+.tree-row.dragging .tree-node-stats,
+.tree-row.dragging .stat-icon,
+.tree-row.dragging .stat-count {
+    opacity: 1;
+    visibility: visible;
+    display: flex;
+}
+
+/* 确保拖拽时统计信息正确显示 */
+.tree-row.dragging .tree-node-stats {
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+/* 防止拖拽时文字被截断 */
+.tree-row.dragging .tree-node-title {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
 }
 
 .tree-cell {

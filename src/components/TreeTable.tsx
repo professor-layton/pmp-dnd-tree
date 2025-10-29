@@ -266,10 +266,25 @@ export function TreeTable({
         const height = rect.height;
         
         let position: 'before' | 'after' | 'inside' = 'inside';
-        if (y < height * 0.25) {
-            position = 'before';
-        } else if (y > height * 0.75) {
-            position = 'after';
+        
+        // 对于Root节点（level 0），大部分区域应该是inside
+        if (node.level === 0) {
+            if (y < height * 0.2) {
+                position = 'before';
+            } else if (y > height * 0.8) {
+                position = 'after';
+            } else {
+                position = 'inside'; // Root节点的中间大部分区域都是inside
+            }
+        } else {
+            // 对于非Root节点，使用正常的判断逻辑
+            if (y < height * 0.25) {
+                position = 'before';
+            } else if (y > height * 0.75) {
+                position = 'after';
+            } else {
+                position = 'inside';
+            }
         }
         
         if (canDropNode(dragDropContext.draggedNode, node, position)) {
