@@ -65,52 +65,119 @@ Place your custom CSS here
 }
 
 .tree-row.dragging {
-    opacity: 0.8;
-    transform: scale(1.01);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    background-color: #ffffff !important;
-    border: 1px solid #d0d7de !important;
+    opacity: 0.6;
+    /* 移除transform避免布局问题 */
+    /* transform: scale(1.01); */
+    background-color: #f8f9fa !important;
+    border: 1px dashed #999 !important;
     border-radius: 6px;
-    z-index: 1000;
-    position: relative;
-    /* 防止宽度变化 */
+    /* 保持原有位置，不使用z-index和position */
+    /* z-index: 1000; */
+    /* position: relative; */
     width: 100% !important;
     max-width: none !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
 }
 
-.tree-row.drop-target {
-    background-color: #e3f2fd !important;
-    border-color: #2196f3 !important;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
-    transform: none !important;
-    opacity: 1 !important;
+/* Placeholder效果 - 替代原有的drop-target样式 */
+.tree-placeholder {
+    height: 4px;
+    background: linear-gradient(90deg, #2196f3, #64b5f6);
+    margin: 4px 0;
+    border-radius: 2px;
+    opacity: 0.9;
+    position: relative;
+    overflow: hidden;
+    animation: placeholder-pulse 1.2s ease-in-out infinite;
+    box-shadow: 0 1px 3px rgba(33, 150, 243, 0.3);
 }
 
-.tree-row.drop-target::before {
+.tree-placeholder::before {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #2196f3;
-    z-index: 10;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: placeholder-shimmer 2s infinite;
 }
 
-.tree-row.drop-target.drop-before::before {
-    top: -1px;
+.tree-placeholder.inside {
+    height: 3px;
+    margin: 2px 0 2px 20px;
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    box-shadow: 0 1px 3px rgba(76, 175, 80, 0.3);
 }
 
-.tree-row.drop-target.drop-after::before {
-    bottom: -1px;
+.tree-placeholder-row {
+    height: auto;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
 }
 
-/* 防止拖拽过程中的样式冲突 */
-.tree-row.dragging.drop-target {
-    background-color: #fff3cd !important;
-    border-color: #ffc107 !important;
-    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+.tree-placeholder-row .tree-cell {
+    padding: 0;
+    height: auto;
+}
+
+/* 拖拽时的视觉反馈优化 */
+.tree-row.dragging {
+    opacity: 0.5;
+    background-color: #f8f9fa !important;
+    border: 2px dashed #999 !important;
+    border-radius: 6px;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    /* 添加轻微的阴影效果 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 拖拽时的内容淡化 */
+.tree-row.dragging .tree-node-title,
+.tree-row.dragging .tree-node-description,
+.tree-row.dragging .stat-icon,
+.tree-row.dragging .stat-count {
+    opacity: 0.7;
+}
+
+@keyframes placeholder-pulse {
+    0%, 100% { 
+        opacity: 0.7;
+        transform: scaleY(1);
+    }
+    50% { 
+        opacity: 1;
+        transform: scaleY(1.1);
+    }
+}
+
+@keyframes placeholder-shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 移除原有的拖拽冲突样式，改用placeholder方式 */
+/* 旧的样式已被新的placeholder系统替代 */
+
+/* 优化拖拽启用时的整体体验 */
+.drag-enabled .tree-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.drag-enabled .tree-row:hover {
+    border-color: #b3d4fc;
+    transition: border-color 0.2s ease;
+}
+
+.drag-enabled .tree-row:hover .drag-handle {
+    opacity: 1;
+    color: #666;
 }
 
 /* 确保拖拽时的布局稳定性 */
