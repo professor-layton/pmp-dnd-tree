@@ -17,6 +17,15 @@ export function canDropNode(draggedNode: TreeNode, targetNode: TreeNode, positio
         return false;
     }
     
+    // 特殊处理：子节点拖拽到父节点的情况
+    const isChildToParent = draggedNode.parentId === targetNode.id;
+    if (isChildToParent) {
+        // 子节点拖拽到父节点时，只允许inside位置，保持子节点关系
+        if (position !== 'inside') {
+            return false;
+        }
+    }
+    
     // 特殊规则：防止创建多个Root节点
     if (position === 'before' || position === 'after') {
         // 如果目标节点是Root节点（level 0），不允许before/after操作
