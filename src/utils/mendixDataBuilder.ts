@@ -85,6 +85,27 @@ export const fetchEntityByXpath = (xpath: string) => {
   });
 }
 
+export const fetchGroupByName = (name: string) => {
+    return new Promise<mendix.lib.MxObject | null>((resolve, reject) => {
+        const xpath = `//ATM_Company.Group[Name = '${name}']`;
+        mx.data.get({
+            xpath,
+            callback: objects => {
+                if (objects && objects.length > 0) {
+                    resolve(objects[0] as mendix.lib.MxObject);
+                } else {
+                    resolve(null);
+                }
+            },
+            error: e => {
+                reject(e);
+                console.error(`Failed to fetch group by name ${name}, ${e}`);
+            }
+        });
+    });
+};
+
+
 export async function fetchGroupsFromMendix(): Promise<MendixGroup[]> {
     try {
         const [groups, metrics] = await Promise.all([

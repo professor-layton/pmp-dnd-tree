@@ -3,7 +3,7 @@ import { TreeTable } from "./components/TreeTable";
 import { sampleTreeData } from "./data/sampleData";
 import { moveNode } from "./utils/treeRestructure";
 import { TreeNode } from "./types/TreeTypes";
-import { buildTreeFromMendixGroups, fetchGroupsFromMendix } from "./utils/mendixDataBuilder";
+import { buildTreeFromMendixGroups, fetchGroupByName, fetchGroupsFromMendix } from "./utils/mendixDataBuilder";
 
 import { PMPDnDTreeContainerProps } from "../typings/PMPDnDTreeProps";
 
@@ -45,6 +45,38 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
         console.log("Node selected:", nodeId, selected);
     }, []);
 
+    const handleNodeClick = useCallback(async (node: TreeNode) => {
+        console.log("Node clicked:", node.name, node.id);
+        const entity = await fetchGroupByName(node.name)
+        if (!entity) {
+            console.error(`No Mendix entity found for group name: ${node.name}`);
+            return;
+        }
+        // 使用 Mendix 的 mx.ui.openForm 打开群组详细信息页面
+        if (mx.ui.openForm) {
+            const formPath = "ATM_Company/EnhancedGroup_Detail.page.xml";
+            try {
+                // 方法1: 使用 MxContext 传递实体上下文
+                const ctx = new mendix.lib.MxContext();
+                ctx.setContext(entity.getEntity(), entity.getGuid());
+                mx.ui.openForm(formPath, {
+                    location: "content",
+                    context: ctx,
+                    callback: (form: any) => {
+                        console.log("Group detail form opened with context:", form);
+                    },
+                    error: (error: any) => {
+                        console.error("Error opening group detail form:", error);
+                    }
+                });
+            } catch (contextError) {
+                console.warn("Failed to create MxContext, trying alternative method:", contextError);
+            }
+        } else {
+            console.warn("Mendix platform API not available");
+        }
+    }, []);
+
     const handleNodeMove = useCallback((draggedNodeId: string, targetNodeId: string, position: 'before' | 'after' | 'inside') => {
         console.log(`Moving node ${draggedNodeId} ${position} ${targetNodeId}`);
         
@@ -80,6 +112,7 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
                 data={treeData} 
                 onNodeToggle={handleNodeToggle}
                 onNodeSelect={handleNodeSelect}
+                onNodeClick={handleNodeClick}
                 onNodeMove={handleNodeMove}
                 enableDragDrop={true}
                 className="group-plants-tree"

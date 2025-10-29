@@ -40,6 +40,7 @@ interface TreeRowProps {
     node: TreeNode;
     onToggle: (nodeId: string) => void;
     onSelect: (nodeId: string, selected: boolean) => void;
+    onNodeClick?: (node: TreeNode) => void;
     isExpanded: boolean;
     isSelected: boolean;
     enableDragDrop: boolean;
@@ -55,6 +56,7 @@ function TreeRow({
     node, 
     onToggle, 
     onSelect, 
+    onNodeClick,
     isExpanded, 
     isSelected, 
     enableDragDrop,
@@ -112,6 +114,13 @@ function TreeRow({
         onDragEnd();
     }, [onDragEnd]);
 
+    const handleNodeClick = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        if (onNodeClick) {
+            onNodeClick(node);
+        }
+    }, [node, onNodeClick]);
+
     const rowClassName = `tree-row ${isDragging ? 'dragging' : ''}`;
 
     return (
@@ -156,7 +165,14 @@ function TreeRow({
                         <div className="tree-node-main">
                             <div className="tree-node-info">
                                 <div className="tree-node-title">
-                                    {node.name}
+                                    <a 
+                                        href="#"
+                                        className="tree-node-link"
+                                        onClick={handleNodeClick}
+                                        title={`Open ${node.name} details`}
+                                    >
+                                        {node.name}
+                                    </a>
                                     {node.level === 0 && (
                                         <span className="root-tag">ROOT</span>
                                     )}
@@ -198,6 +214,7 @@ export function TreeTable({
     data, 
     onNodeToggle, 
     onNodeSelect, 
+    onNodeClick,
     onNodeMove,
     className = "",
     enableDragDrop = false
@@ -450,6 +467,7 @@ export function TreeTable({
                                     node={node}
                                     onToggle={handleToggle}
                                     onSelect={handleSelect}
+                                    onNodeClick={onNodeClick}
                                     isExpanded={expandedNodes.has(node.id)}
                                     isSelected={selectedNodes.has(node.id)}
                                     enableDragDrop={enableDragDrop}
