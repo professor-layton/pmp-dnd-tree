@@ -67,26 +67,17 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
     // Create Group 按钮处理
     const handleCreateGroup = useCallback(() => {
         console.log("Create Group clicked");
-        
-        if (mx.ui.openForm) {
-            const formPath = "ATM_Company/Group_NewEdit.page.xml";
-            try {
-                mx.ui.openForm(formPath, {
-                    location: "content",
-                    callback: (form: any) => {
-                        console.log("Create Group form opened:", form);
-                    },
-                    error: (error: any) => {
-                        console.error("Error opening Create Group form:", error);
-                    }
-                });
-            } catch (error) {
-                console.error("Failed to open Create Group form:", error);
+        mx.data.action({ 
+            params: {
+                actionname: "ATM_Company.ACT_EnhancedGroup_New",
+            },
+            callback: (result) => {
+                console.log("Microflow executed successfully:", result);
+            },
+            error: (error) => {
+                console.error("Error executing microflow:", error);
             }
-        } else {
-            console.warn("Mendix platform API not available");
-            alert("Create Group functionality");
-        }
+        });
     }, []);
 
     // Edit Group Hierarchy 按钮处理
