@@ -93,10 +93,10 @@ export function insertNodeInTree(
                     // 在目标节点后插入（需要在父级处理）
                     return node;
                 case 'inside':
-                    // 作为子节点插入
-                    const updatedNode = { ...nodeToInsert, level: node.level + 1, parentId: node.id };
+                    // 作为子节点插入 - 递归更新所有子节点的层级和parentId
+                    const updatedNodeToInsert = updateNodeAndChildrenLevels(nodeToInsert, node.level + 1, node.id);
                     const children = node.children || [];
-                    return { ...node, children: [...children, updatedNode] };
+                    return { ...node, children: [...children, updatedNodeToInsert] };
                 default:
                     return node;
             }
@@ -110,7 +110,7 @@ export function insertNodeInTree(
                 const targetIndex = updatedChildren.findIndex(child => child.id === targetNodeId);
                 if (targetIndex !== -1) {
                     const insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
-                    const updatedNode = { ...nodeToInsert, level: node.level + 1, parentId: node.id };
+                    const updatedNode = updateNodeAndChildrenLevels(nodeToInsert, node.level + 1, node.id);
                     updatedChildren.splice(insertIndex, 0, updatedNode);
                 }
             }
@@ -120,6 +120,20 @@ export function insertNodeInTree(
         
         return node;
     });
+}
+
+// 递归更新节点及其所有子节点的层级和parentId
+function updateNodeAndChildrenLevels(node: TreeNode, newLevel: number, newParentId?: string): TreeNode {
+    const updatedNode: TreeNode = {
+        ...node,
+        level: newLevel,
+        parentId: newParentId,
+        children: node.children ? node.children.map(child => 
+            updateNodeAndChildrenLevels(child, newLevel + 1, node.id)
+        ) : undefined
+    };
+    
+    return updatedNode;
 }
 
 // 处理根级别的before/after插入
@@ -133,7 +147,8 @@ export function insertNodeAtRootLevel(
     if (targetIndex === -1) return tree;
     
     const insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
-    const updatedNode = { ...nodeToInsert, level: 0, parentId: undefined };
+    // 使用helper函数递归更新层级，根级别的parentId为undefined
+    const updatedNode = updateNodeAndChildrenLevels(nodeToInsert, 0, undefined);
     
     const newTree = [...tree];
     newTree.splice(insertIndex, 0, updatedNode);
