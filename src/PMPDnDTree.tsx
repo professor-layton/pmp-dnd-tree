@@ -162,25 +162,93 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
         if ((mx.ui as any).getContentForm) {
             const contentForm = (mx.ui as any).getContentForm();
             console.log("Content form:", contentForm);
+            if (!contentForm) {
+                console.error("Content form not available");
+                return;
+            }
             const curr = contentForm.getContext();
             const ctx = new mendix.lib.MxContext();
             ctx.setContext(group.getEntity(), group.getGuid());
+            
+            // 构建参数规格，只包含存在的参数
+            const paramsSpec: any = {
+                "Group": group.getEntity()
+            };
+            
             // TrackEntity就是SelectionHelper所在的实体
             const selectionHelper = curr.getTrackObject();
-            ctx.setTrackObject(selectionHelper);
-            mx.data.callNanoflow({ 
-                nanoflow: { qualifiedName: "ATM_Company.ACT_EnhancedGroup_Peek" } as any,
-                origin: mx.ui as any,
-                context: ctx,
-                callback: function (result) {
-                    console.log("Nanoflow result:", result);
-                },
-                error: function (error) {
-                    console.error("Nanoflow call failed:", error);
+            if (selectionHelper) {
+                ctx.setTrackObject(selectionHelper);
+                ctx.setContext(selectionHelper.getEntity(), selectionHelper.getGuid());
+                paramsSpec["SelectionHelper"] = selectionHelper.getEntity();
+                console.log("Added SelectionHelper to context and params");
+            } else {
+                console.warn("SelectionHelper not available");
+            }
+            
+            console.log("Calling nanoflow with params:", paramsSpec);
+            
+            // 使用正确的 Mendix nanoflow 调用格式
+            try {
+                // 根据 mxui.js 源码分析，使用更简单的方式
+                (mx.data as any).callNanoflow({
+                    nanoflow: {
+                        nanoflow: "ATM_Company.ACT_EnhancedGroup_Peek",
+                        paramsSpec: paramsSpec
+                    },
+                    context: ctx,
+                    origin: contentForm,
+                    callback: (result: any) => {
+                        console.log("Nanoflow executed successfully:", result);
+                    },
+                    error: (error: any) => {
+                        console.error("Nanoflow execution failed:", error);
+                        
+                        // 如果失败，尝试只用Group参数重试
+                        console.log("Retrying with only Group parameter...");
+                        const simpleParamsSpec = { "Group": group.getEntity() };
+                        
+                        (mx.data as any).callNanoflow({
+                            nanoflow: {
+                                nanoflow: "ATM_Company.ACT_EnhancedGroup_Peek",
+                                paramsSpec: simpleParamsSpec
+                            },
+                            context: ctx,
+                            origin: contentForm,
+                            callback: (retryResult: any) => {
+                                console.log("Nanoflow retry successful:", retryResult);
+                            },
+                            error: (retryError: any) => {
+                                console.error("Nanoflow retry also failed:", retryError);
+                            }
+                        });
+                    }
+                });
+            } catch (callError) {
+                console.error("Failed to call nanoflow:", callError);
+                
+                // 最后的备用方法：使用 mx.data.action
+                console.log("Trying fallback method with mx.data.action...");
+                try {
+                    mx.data.action({
+                        params: {
+                            actionname: "ATM_Company.ACT_EnhancedGroup_Peek",
+                            guids: [group.getGuid()]
+                        },
+                        origin: contentForm,
+                        context: ctx,
+                        callback: (result: any) => {
+                            console.log("Action executed successfully:", result);
+                        },
+                        error: (error: any) => {
+                            console.error("Action execution failed:", error);
+                        }
+                    } as any);
+                } catch (actionError) {
+                    console.error("All nanoflow/action call methods failed:", actionError);
                 }
-            });
-        }
-        else {
+            }
+        } else {
             console.warn("Mendix platform API not available");
         }
     }, []);
