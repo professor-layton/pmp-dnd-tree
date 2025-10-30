@@ -19,5 +19,15 @@
                 <description>Enable drag and drop functionality for tree nodes. When disabled, tree rows cannot be dragged or reordered.</description>
             </property>
         </propertyGroup>
+        <propertyGroup caption="Toolbar Buttons">
+            <property key="showCreateButton" type="boolean" defaultValue="true" required="true">
+                <caption>Show Create Group Button</caption>
+                <description>Show or hide the 'Create Group' button in the toolbar. When disabled, the create button will not be displayed.</description>
+            </property>
+            <property key="showEditHierarchyButton" type="boolean" defaultValue="true" required="true">
+                <caption>Show Edit Hierarchy Button</caption>
+                <description>Show or hide the 'Edit Group Hierarchy' button in the toolbar. When disabled, the edit hierarchy button will not be displayed.</description>
+            </property>
+        </propertyGroup>
     </properties>
 </widget>

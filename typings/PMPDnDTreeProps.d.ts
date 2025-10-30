@@ -12,6 +12,8 @@ export interface PMPDnDTreeContainerProps {
     tabIndex?: number;
     sampleText: string;
     enableDragDrop: boolean;
+    showCreateButton: boolean;
+    showEditHierarchyButton: boolean;
 }
 
 export interface PMPDnDTreePreviewProps {
@@ -27,4 +29,6 @@ export interface PMPDnDTreePreviewProps {
     translate: (text: string) => string;
     sampleText: string;
     enableDragDrop: boolean;
+    showCreateButton: boolean;
+    showEditHierarchyButton: boolean;
 }

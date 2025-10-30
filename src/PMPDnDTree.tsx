@@ -9,7 +9,7 @@ import { PMPDnDTreeContainerProps } from "../typings/PMPDnDTreeProps";
 
 import "./ui/PMPDnDTree.css";
 
-export function PMPDnDTree({ sampleText, enableDragDrop }: PMPDnDTreeContainerProps): ReactElement {
+export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showEditHierarchyButton }: PMPDnDTreeContainerProps): ReactElement {
     const [treeData, setTreeData] = useState<TreeNode[]>(sampleTreeData);
     const [filteredTreeData, setFilteredTreeData] = useState<TreeNode[]>(sampleTreeData);
     const [isLoadingMendixData, setIsLoadingMendixData] = useState(false);
@@ -287,40 +287,46 @@ export function PMPDnDTree({ sampleText, enableDragDrop }: PMPDnDTreeContainerPr
                 </div>
                 
                 {/* 右侧：按钮组 */}
-                <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                        onClick={handleEditHierarchy}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: 'white',
-                            color: '#007bff',
-                            border: '1px solid #007bff',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '400',
-                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
-                        }}
-                    >
-                        Edit Group Hierarchy
-                    </button>
-                    <button
-                        onClick={handleCreateGroup}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '400',
-                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
-                        }}
-                    >
-                        Create Group
-                    </button>
-                </div>
+                {(showEditHierarchyButton || showCreateButton) && (
+                    <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
+                        {showEditHierarchyButton && (
+                            <button
+                                onClick={handleEditHierarchy}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: 'white',
+                                    color: '#007bff',
+                                    border: '1px solid #007bff',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '400',
+                                    fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                                }}
+                            >
+                                Edit Group Hierarchy
+                            </button>
+                        )}
+                        {showCreateButton && (
+                            <button
+                                onClick={handleCreateGroup}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#007bff',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '400',
+                                    fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                                }}
+                            >
+                                Create Group
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
             
             <TreeTable 
