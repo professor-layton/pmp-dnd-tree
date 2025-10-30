@@ -1,7 +1,7 @@
 import { ReactElement, createElement, useState, useCallback } from "react";
 import { TreeTable } from "./components/TreeTable";
 import { sampleTreeData } from "./data/sampleData";
-import { moveNode } from "./utils/treeRestructure";
+import { moveNode, deleteNodesAndMoveChildren } from "./utils/treeRestructure";
 import { TreeNode } from "./types/TreeTypes";
 import { buildTreeFromMendixGroups, fetchGroupByName, fetchGroupsFromMendix } from "./utils/mendixDataBuilder";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -255,11 +255,46 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
     // 处理删除选中项
     const handleDeleteSelected = useCallback(() => {
         console.log("Delete selected items:", selectedNodeIds);
-        // TODO: 实现删除逻辑
+        
+        if (selectedNodeIds.length === 0) {
+            console.warn("No items selected for deletion");
+            return;
+        }
+        
+        // 执行删除操作，子节点会自动移动到父节点下
+        const newTreeData = deleteNodesAndMoveChildren(treeData, selectedNodeIds);
+        setTreeData(newTreeData);
+        
+        // 如果有搜索词，重新应用过滤
+        if (searchTerm.trim()) {
+            const filterTree = (nodes: TreeNode[]): TreeNode[] => {
+                const filtered: TreeNode[] = [];
+                
+                for (const node of nodes) {
+                    const matchesSearch = node.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    const filteredChildren = node.children ? filterTree(node.children) : [];
+                    
+                    if (matchesSearch || filteredChildren.length > 0) {
+                        filtered.push({
+                            ...node,
+                            children: filteredChildren
+                        });
+                    }
+                }
+                
+                return filtered;
+            };
+            setFilteredTreeData(filterTree(newTreeData));
+        } else {
+            setFilteredTreeData(newTreeData);
+        }
+        
+        console.log(`Successfully deleted ${selectedNodeIds.length} item(s) and moved their children to parent nodes`);
+        
         // 删除完成后清除选择
         setClearSelection(true);
         setSelectedNodeIds([]);
-    }, [selectedNodeIds]);
+    }, [selectedNodeIds, treeData, searchTerm]);
 
     return (
         <div className="pmp-dnd-tree-widget">
