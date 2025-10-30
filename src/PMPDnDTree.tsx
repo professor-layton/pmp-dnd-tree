@@ -154,28 +154,35 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
 
     const handleRowClick = useCallback(async (node: TreeNode, event: React.MouseEvent) => {
         console.log("Row clicked:", node.name, node.id, event);
-        const entity = await fetchGroupByName(node.name)
-        if (!entity) {
+        const group = await fetchGroupByName(node.name)
+        if (!group) {
             console.error(`No Mendix entity found for group name: ${node.name}`);
             return;
-        }/*
-        const form = (mx.ui as any).getCurrentForm?.();
-        const ctx = form?.context as mendix.lib.MxContext;
-        console.info(`${form}, ${ctx}`);
-        */
-        const ctx = new mendix.lib.MxContext();
-        ctx.setContext(entity.getEntity(), entity.getGuid());
-        mx.data.callNanoflow({ 
-            nanoflow: { qualifiedName: "ATM_Company.ACT_EnhancedGroup_Peek" } as any,
-            origin: mx.ui as any,
-            context: ctx,
-            callback: function (result) {
-                console.log("Nanoflow result:", result);
-            },
-            error: function (error) {
-                console.error("Nanoflow call failed:", error);
-            }
-        });
+        }
+        if ((mx.ui as any).getContentForm) {
+            const contentForm = (mx.ui as any).getContentForm();
+            console.log("Content form:", contentForm);
+            const curr = contentForm.getContext();
+            const ctx = new mendix.lib.MxContext();
+            ctx.setContext(group.getEntity(), group.getGuid());
+            // TrackEntity就是SelectionHelper所在的实体
+            const selectionHelper = curr.getTrackObject();
+            ctx.setTrackObject(selectionHelper);
+            mx.data.callNanoflow({ 
+                nanoflow: { qualifiedName: "ATM_Company.ACT_EnhancedGroup_Peek" } as any,
+                origin: mx.ui as any,
+                context: ctx,
+                callback: function (result) {
+                    console.log("Nanoflow result:", result);
+                },
+                error: function (error) {
+                    console.error("Nanoflow call failed:", error);
+                }
+            });
+        }
+        else {
+            console.warn("Mendix platform API not available");
+        }
     }, []);
 
     const handleNodeMove = useCallback((draggedNodeId: string, targetNodeId: string, position: 'before' | 'after' | 'inside') => {
