@@ -4,6 +4,7 @@ import { sampleTreeData } from "./data/sampleData";
 import { moveNode } from "./utils/treeRestructure";
 import { TreeNode } from "./types/TreeTypes";
 import { buildTreeFromMendixGroups, fetchGroupByName, fetchGroupsFromMendix } from "./utils/mendixDataBuilder";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
 import { PMPDnDTreeContainerProps } from "../typings/PMPDnDTreeProps";
 
@@ -251,6 +252,15 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         setSelectedNodeIds([]);
     }, []);
 
+    // 处理删除选中项
+    const handleDeleteSelected = useCallback(() => {
+        console.log("Delete selected items:", selectedNodeIds);
+        // TODO: 实现删除逻辑
+        // 删除完成后清除选择
+        setClearSelection(true);
+        setSelectedNodeIds([]);
+    }, [selectedNodeIds]);
+
     return (
         <div className="pmp-dnd-tree-widget">
             <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -295,21 +305,48 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                         }}>
                             {selectedNodeIds.length} Item{selectedNodeIds.length > 1 ? 's' : ''} Selected
                         </div>
-                        <button
-                            onClick={handleCancelSelection}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: 'transparent',
-                                color: 'white',
-                                border: '1px solid white',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
-                            }}
-                        >
-                            Cancel
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button
+                                onClick={handleDeleteSelected}
+                                style={{
+                                    padding: '6px 6px',
+                                    backgroundColor: 'transparent',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
+                                }}
+                            >
+                                <RiDeleteBin5Line size={16} />
+                                Delete
+                            </button>
+                            <div style={{
+                                width: '1px',
+                                height: '28px',
+                                backgroundColor: 'white',
+                                opacity: 0.5
+                            }} />
+                            <button
+                                onClick={handleCancelSelection}
+                                style={{
+                                    padding: '6px 6px',
+                                    backgroundColor: 'transparent',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     // 正常状态：搜索栏和按钮 - 使用 div 容器
