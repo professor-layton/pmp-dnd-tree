@@ -13,5 +13,11 @@
                 <description>Sample text input</description>
             </property>
         </propertyGroup>
+        <propertyGroup caption="Drag and Drop">
+            <property key="enableDragDrop" type="boolean" defaultValue="false" required="true">
+                <caption>Enable Drag and Drop</caption>
+                <description>Enable drag and drop functionality for tree nodes. When disabled, tree rows cannot be dragged or reordered.</description>
+            </property>
+        </propertyGroup>
     </properties>
 </widget>

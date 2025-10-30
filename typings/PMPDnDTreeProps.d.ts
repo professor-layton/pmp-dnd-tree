@@ -11,6 +11,7 @@ export interface PMPDnDTreeContainerProps {
     style?: CSSProperties;
     tabIndex?: number;
     sampleText: string;
+    enableDragDrop: boolean;
 }
 
 export interface PMPDnDTreePreviewProps {
@@ -25,4 +26,5 @@ export interface PMPDnDTreePreviewProps {
     renderMode: "design" | "xray" | "structure";
     translate: (text: string) => string;
     sampleText: string;
+    enableDragDrop: boolean;
 }

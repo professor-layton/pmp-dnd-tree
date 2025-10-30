@@ -9,7 +9,7 @@ import { PMPDnDTreeContainerProps } from "../typings/PMPDnDTreeProps";
 
 import "./ui/PMPDnDTree.css";
 
-export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactElement {
+export function PMPDnDTree({ sampleText, enableDragDrop }: PMPDnDTreeContainerProps): ReactElement {
     const [treeData, setTreeData] = useState<TreeNode[]>(sampleTreeData);
     const [filteredTreeData, setFilteredTreeData] = useState<TreeNode[]>(sampleTreeData);
     const [isLoadingMendixData, setIsLoadingMendixData] = useState(false);
@@ -330,7 +330,7 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
                 onNodeClick={handleNodeClick}
                 onRowClick={handleRowClick}
                 onNodeMove={handleNodeMove}
-                enableDragDrop={true}
+                enableDragDrop={enableDragDrop}
                 className="group-plants-tree"
             />
             {sampleText && (
