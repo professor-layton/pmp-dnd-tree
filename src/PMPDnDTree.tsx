@@ -1,4 +1,4 @@
-import { ReactElement, createElement, useState, useCallback } from "react";
+import { ReactElement, createElement, useState, useCallback, useEffect } from "react";
 import { TreeTable } from "./components/TreeTable";
 import { sampleTreeData } from "./data/sampleData";
 import { moveNode, deleteNodesAndMoveChildren } from "./utils/treeRestructure";
@@ -295,6 +295,32 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         setClearSelection(true);
         setSelectedNodeIds([]);
     }, [selectedNodeIds, treeData, searchTerm]);
+
+    // 监听DOM中"Save Group Hierarchy"按钮的点击事件
+    useEffect(() => {
+        const handleSaveGroupHierarchyClick = (event: Event) => {
+            const target = event.target as HTMLElement;
+            // 检查是否是"Save Group Hierarchy"按钮
+            if (target && (
+                target.textContent?.trim() === "Save Group Hierarchy" ||
+                target.innerText?.trim() === "Save Group Hierarchy" ||
+                target.getAttribute('title') === "Save Group Hierarchy" ||
+                target.getAttribute('aria-label') === "Save Group Hierarchy"
+            )) {
+                console.log("Save Group Hierarchy button clicked - detected by PMPDnDTree widget");
+                console.log("Button element:", target);
+                console.log("Event details:", event);
+            }
+        };
+
+        // 添加全局点击事件监听器
+        document.addEventListener('click', handleSaveGroupHierarchyClick, true);
+
+        // 清理函数
+        return () => {
+            document.removeEventListener('click', handleSaveGroupHierarchyClick, true);
+        };
+    }, []); // 空依赖数组，只在组件挂载和卸载时运行
 
     return (
         <div className="pmp-dnd-tree-widget">
