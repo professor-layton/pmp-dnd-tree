@@ -126,7 +126,7 @@ function TreeRow({
     const handleRowClick = useCallback((e: React.MouseEvent) => {
         // 检查点击的是否是控制元素（checkbox, toggle button, drag handle, link）
         const target = e.target as HTMLElement;
-        const isControlElement = target.closest('.tree-checkbox') ||
+        const isControlElement = (enableDragDrop && target.closest('.tree-checkbox')) ||
                                 target.closest('.tree-toggle') ||
                                 target.closest('.drag-handle') ||
                                 target.closest('.tree-node-link');
@@ -135,7 +135,7 @@ function TreeRow({
         if (!isControlElement && onRowClick) {
             onRowClick(node, e);
         }
-    }, [node, onRowClick]);
+    }, [node, onRowClick, enableDragDrop]);
 
     const rowClassName = `tree-row ${isDragging ? 'dragging' : ''}`;
 
@@ -155,13 +155,15 @@ function TreeRow({
             <td className="tree-cell tree-cell-content">
                 <div className="tree-node-wrapper" style={{ paddingLeft: indentLevel }}>
                     <div className="tree-node-controls">
-                        <input
-                            type="checkbox"
-                            className="tree-checkbox"
-                            checked={isSelected}
-                            onChange={handleSelect}
-                            aria-label={`Select ${node.name}`}
-                        />
+                        {enableDragDrop && (
+                            <input
+                                type="checkbox"
+                                className="tree-checkbox"
+                                checked={isSelected}
+                                onChange={handleSelect}
+                                aria-label={`Select ${node.name}`}
+                            />
+                        )}
                         {hasChildren && (
                             <button
                                 className={`tree-toggle ${isExpanded ? 'expanded' : 'collapsed'}`}
