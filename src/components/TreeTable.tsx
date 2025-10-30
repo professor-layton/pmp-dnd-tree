@@ -41,6 +41,7 @@ interface TreeRowProps {
     onToggle: (nodeId: string) => void;
     onSelect: (nodeId: string, selected: boolean) => void;
     onNodeClick?: (node: TreeNode) => void;
+    onRowClick?: (node: TreeNode, event: React.MouseEvent) => void;
     isExpanded: boolean;
     isSelected: boolean;
     enableDragDrop: boolean;
@@ -57,6 +58,7 @@ function TreeRow({
     onToggle, 
     onSelect, 
     onNodeClick,
+    onRowClick,
     isExpanded, 
     isSelected, 
     enableDragDrop,
@@ -121,6 +123,20 @@ function TreeRow({
         }
     }, [node, onNodeClick]);
 
+    const handleRowClick = useCallback((e: React.MouseEvent) => {
+        // 检查点击的是否是控制元素（checkbox, toggle button, drag handle, link）
+        const target = e.target as HTMLElement;
+        const isControlElement = target.closest('.tree-checkbox') ||
+                                target.closest('.tree-toggle') ||
+                                target.closest('.drag-handle') ||
+                                target.closest('.tree-node-link');
+        
+        // 如果点击的不是控制元素，则触发行点击事件
+        if (!isControlElement && onRowClick) {
+            onRowClick(node, e);
+        }
+    }, [node, onRowClick]);
+
     const rowClassName = `tree-row ${isDragging ? 'dragging' : ''}`;
 
     return (
@@ -133,6 +149,8 @@ function TreeRow({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onDragEnd={handleDragEnd}
+            onClick={handleRowClick}
+            style={{ cursor: onRowClick ? 'pointer' : 'default' }}
         >
             <td className="tree-cell tree-cell-content">
                 <div className="tree-node-wrapper" style={{ paddingLeft: indentLevel }}>
@@ -215,6 +233,7 @@ export function TreeTable({
     onNodeToggle, 
     onNodeSelect, 
     onNodeClick,
+    onRowClick,
     onNodeMove,
     className = "",
     enableDragDrop = false
@@ -468,6 +487,7 @@ export function TreeTable({
                                     onToggle={handleToggle}
                                     onSelect={handleSelect}
                                     onNodeClick={onNodeClick}
+                                    onRowClick={onRowClick}
                                     isExpanded={expandedNodes.has(node.id)}
                                     isSelected={selectedNodes.has(node.id)}
                                     enableDragDrop={enableDragDrop}

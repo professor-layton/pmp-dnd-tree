@@ -152,6 +152,32 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
         }
     }, []);
 
+    const handleRowClick = useCallback(async (node: TreeNode, event: React.MouseEvent) => {
+        console.log("Row clicked:", node.name, node.id, event);
+        const entity = await fetchGroupByName(node.name)
+        if (!entity) {
+            console.error(`No Mendix entity found for group name: ${node.name}`);
+            return;
+        }/*
+        const form = (mx.ui as any).getCurrentForm?.();
+        const ctx = form?.context as mendix.lib.MxContext;
+        console.info(`${form}, ${ctx}`);
+        */
+        const ctx = new mendix.lib.MxContext();
+        ctx.setContext(entity.getEntity(), entity.getGuid());
+        mx.data.callNanoflow({ 
+            nanoflow: { qualifiedName: "ATM_Company.ACT_EnhancedGroup_Peek" } as any,
+            origin: mx.ui as any,
+            context: ctx,
+            callback: function (result) {
+                console.log("Nanoflow result:", result);
+            },
+            error: function (error) {
+                console.error("Nanoflow call failed:", error);
+            }
+        });
+    }, []);
+
     const handleNodeMove = useCallback((draggedNodeId: string, targetNodeId: string, position: 'before' | 'after' | 'inside') => {
         console.log(`Moving node ${draggedNodeId} ${position} ${targetNodeId}`);
         
@@ -277,6 +303,7 @@ export function PMPDnDTree({ sampleText }: PMPDnDTreeContainerProps): ReactEleme
                 onNodeToggle={handleNodeToggle}
                 onNodeSelect={handleNodeSelect}
                 onNodeClick={handleNodeClick}
+                onRowClick={handleRowClick}
                 onNodeMove={handleNodeMove}
                 enableDragDrop={true}
                 className="group-plants-tree"
