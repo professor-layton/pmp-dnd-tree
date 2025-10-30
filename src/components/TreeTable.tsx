@@ -237,6 +237,8 @@ export function TreeTable({
     onNodeClick,
     onRowClick,
     onNodeMove,
+    onSelectionChange,
+    clearSelection,
     className = "",
     enableDragDrop = false
 }: TreeTableProps): ReactElement {
@@ -255,6 +257,16 @@ export function TreeTable({
     useEffect(() => {
         setExpandedNodes(defaultExpandedNodes);
     }, [defaultExpandedNodes]);
+
+    // 处理清除选择
+    useEffect(() => {
+        if (clearSelection) {
+            setSelectedNodes(new Set());
+            if (onSelectionChange) {
+                onSelectionChange([]);
+            }
+        }
+    }, [clearSelection, onSelectionChange]);
 
     const handleToggle = useCallback((nodeId: string) => {
         setExpandedNodes(prev => {
@@ -280,13 +292,19 @@ export function TreeTable({
             } else {
                 newSet.delete(nodeId);
             }
+            
+            // 调用选择变化回调
+            if (onSelectionChange) {
+                onSelectionChange(Array.from(newSet));
+            }
+            
             return newSet;
         });
         
         if (onNodeSelect) {
             onNodeSelect(nodeId, selected);
         }
-    }, [onNodeSelect]);
+    }, [onNodeSelect, onSelectionChange]);
 
     const handleDragStart = useCallback((node: TreeNode) => {
         setDragDropContext({

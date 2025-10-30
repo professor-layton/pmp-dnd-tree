@@ -14,6 +14,8 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
     const [filteredTreeData, setFilteredTreeData] = useState<TreeNode[]>(sampleTreeData);
     const [isLoadingMendixData, setIsLoadingMendixData] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
+    const [clearSelection, setClearSelection] = useState(false);
 
     // 可选：从Mendix加载真实数据的函数
     const loadMendixData = useCallback(async () => {
@@ -236,6 +238,19 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         console.log("Tree restructured successfully");
     }, [treeData, searchTerm]);
 
+    // 处理选择变化
+    const handleSelectionChange = useCallback((nodeIds: string[]) => {
+        setSelectedNodeIds(nodeIds);
+        // 重置clearSelection状态
+        setClearSelection(false);
+    }, []);
+
+    // 处理取消选择
+    const handleCancelSelection = useCallback(() => {
+        setClearSelection(true);
+        setSelectedNodeIds([]);
+    }, []);
+
     return (
         <div className="pmp-dnd-tree-widget">
             <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -265,65 +280,99 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 justifyContent: 'space-between', 
                 alignItems: 'center', 
                 marginBottom: '16px',
-                backgroundColor: "white",
+                backgroundColor: selectedNodeIds.length > 0 ? "#007bff" : "white",
+                padding: '8px 16px',
+                borderRadius: '4px',
+                color: selectedNodeIds.length > 0 ? "white" : "inherit",
             }}>
-                {/* 左侧：搜索栏 */}
-                <div className="search-container" style={{ flex: '0 0 300px' }}>
-                    <input
-                        type="text"
-                        placeholder="Search groups by name..."
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            border: '1px solid #d0d7de',
-                            borderRadius: '4px',
-                            fontSize: '14px',
-                            backgroundColor: 'white',
+                {selectedNodeIds.length > 0 ? (
+                    // 选择状态栏 - 使用 div 容器
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                        <div style={{ 
+                            fontSize: '14px', 
+                            fontWeight: '500',
                             fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
-                        }}
-                    />
-                </div>
-                
-                {/* 右侧：按钮组 */}
-                {(showEditHierarchyButton || showCreateButton) && (
-                    <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
-                        {showEditHierarchyButton && (
-                            <button
-                                onClick={handleEditHierarchy}
+                        }}>
+                            {selectedNodeIds.length} Item{selectedNodeIds.length > 1 ? 's' : ''} Selected
+                        </div>
+                        <button
+                            onClick={handleCancelSelection}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: 'transparent',
+                                color: 'white',
+                                border: '1px solid white',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                ) : (
+                    // 正常状态：搜索栏和按钮 - 使用 div 容器
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                        {/* 左侧：搜索栏 */}
+                        <div className="search-container" style={{ flex: '0 0 300px' }}>
+                            <input
+                                type="text"
+                                placeholder="Search groups by name..."
+                                value={searchTerm}
+                                onChange={handleSearchChange}
                                 style={{
-                                    padding: '8px 16px',
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #d0d7de',
+                                    borderRadius: '4px',
+                                    fontSize: '14px',
                                     backgroundColor: 'white',
-                                    color: '#007bff',
-                                    border: '1px solid #007bff',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: '400',
                                     fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
                                 }}
-                            >
-                                Edit Group Hierarchy
-                            </button>
-                        )}
-                        {showCreateButton && (
-                            <button
-                                onClick={handleCreateGroup}
-                                style={{
-                                    padding: '8px 16px',
-                                    backgroundColor: '#007bff',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: '400',
-                                    fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
-                                }}
-                            >
-                                Create Group
-                            </button>
+                            />
+                        </div>
+                        
+                        {/* 右侧：按钮组 */}
+                        {(showEditHierarchyButton || showCreateButton) && (
+                            <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
+                                {showEditHierarchyButton && (
+                                    <button
+                                        onClick={handleEditHierarchy}
+                                        style={{
+                                            padding: '8px 16px',
+                                            backgroundColor: 'white',
+                                            color: '#007bff',
+                                            border: '1px solid #007bff',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            fontWeight: '400',
+                                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                                        }}
+                                    >
+                                        Edit Group Hierarchy
+                                    </button>
+                                )}
+                                {showCreateButton && (
+                                    <button
+                                        onClick={handleCreateGroup}
+                                        style={{
+                                            padding: '8px 16px',
+                                            backgroundColor: '#007bff',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            fontWeight: '400',
+                                            fontFamily: '"noto-sans", "Noto Sans KR", "Noto Sans SC", sans-serif'
+                                        }}
+                                    >
+                                        Create Group
+                                    </button>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
@@ -336,6 +385,8 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 onNodeClick={handleNodeClick}
                 onRowClick={handleRowClick}
                 onNodeMove={handleNodeMove}
+                onSelectionChange={handleSelectionChange}
+                clearSelection={clearSelection}
                 enableDragDrop={enableDragDrop}
                 className="group-plants-tree"
             />

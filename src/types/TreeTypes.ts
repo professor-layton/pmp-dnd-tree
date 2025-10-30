@@ -27,6 +27,8 @@ export interface TreeTableProps {
     onNodeClick?: (node: TreeNode) => void;
     onRowClick?: (node: TreeNode, event: React.MouseEvent) => void;
     onNodeMove?: (draggedNodeId: string, targetNodeId: string, position: 'before' | 'after' | 'inside') => void;
+    onSelectionChange?: (selectedNodeIds: string[]) => void;
+    clearSelection?: boolean;
     className?: string;
     enableDragDrop?: boolean;
 }
