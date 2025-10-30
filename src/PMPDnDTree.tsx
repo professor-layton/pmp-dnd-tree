@@ -327,7 +327,14 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 target.textContent?.trim() === "Save Group Hierarchy" ||
                 target.innerText?.trim() === "Save Group Hierarchy"
             )) {
-                console.log("Save Group Hierarchy button clicked - detected by PMPDnDTree widget");                
+                console.log("Save Group Hierarchy button clicked - detected by PMPDnDTree widget");
+                
+                // 检查拖拽功能是否被禁止
+                if (!enableDragDrop) {
+                    console.log("Drag and drop is disabled, API call is also disabled");
+                    return;
+                }
+
                 // 整理树形结构数据
                 const hierarchyData = buildHierarchyData(treeData);
                 console.log("Hierarchy data to be sent:", hierarchyData);
@@ -365,7 +372,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         return () => {
             document.removeEventListener('click', handleSaveGroupHierarchyClick, true);
         };
-    }, [treeData]); // 依赖treeData，确保使用最新的树数据
+    }, [treeData, enableDragDrop]); // 依赖treeData和enableDragDrop，确保使用最新的配置
 
     return (
         <div className="pmp-dnd-tree-widget">
