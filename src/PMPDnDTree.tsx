@@ -296,20 +296,65 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         setSelectedNodeIds([]);
     }, [selectedNodeIds, treeData, searchTerm]);
 
+    // 将树形结构转换为API所需的层级数据格式
+    const buildHierarchyData = useCallback((nodes: TreeNode[], parentName: string | null = null): Array<{name: string, parent: string | null, level: number}> => {
+        const hierarchyItems: Array<{name: string, parent: string | null, level: number}> = [];
+        
+        for (const node of nodes) {
+            // 添加当前节点
+            hierarchyItems.push({
+                name: node.name,
+                parent: parentName,
+                level: node.level
+            });
+            
+            // 递归处理子节点
+            if (node.children && node.children.length > 0) {
+                const childrenItems = buildHierarchyData(node.children, node.name);
+                hierarchyItems.push(...childrenItems);
+            }
+        }
+        
+        return hierarchyItems;
+    }, []);
+
     // 监听DOM中"Save Group Hierarchy"按钮的点击事件
     useEffect(() => {
-        const handleSaveGroupHierarchyClick = (event: Event) => {
+        const handleSaveGroupHierarchyClick = async (event: Event) => {
             const target = event.target as HTMLElement;
             // 检查是否是"Save Group Hierarchy"按钮
             if (target && (
                 target.textContent?.trim() === "Save Group Hierarchy" ||
-                target.innerText?.trim() === "Save Group Hierarchy" ||
-                target.getAttribute('title') === "Save Group Hierarchy" ||
-                target.getAttribute('aria-label') === "Save Group Hierarchy"
+                target.innerText?.trim() === "Save Group Hierarchy"
             )) {
-                console.log("Save Group Hierarchy button clicked - detected by PMPDnDTree widget");
-                console.log("Button element:", target);
-                console.log("Event details:", event);
+                console.log("Save Group Hierarchy button clicked - detected by PMPDnDTree widget");                
+                // 整理树形结构数据
+                const hierarchyData = buildHierarchyData(treeData);
+                console.log("Hierarchy data to be sent:", hierarchyData);
+                
+                try {
+                    // 发送POST请求到REST API
+                    const response = await fetch('/rest/egroupservice/v1/hierarchy', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            hierarchy: hierarchyData
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log("Successfully sent hierarchy data to API:", result);
+                    } else {
+                        console.error("Failed to send hierarchy data:", response.status, response.statusText);
+                        const errorText = await response.text();
+                        console.error("Error response:", errorText);
+                    }
+                } catch (error) {
+                    console.error("Error sending hierarchy data to API:", error);
+                }
             }
         };
 
@@ -320,7 +365,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         return () => {
             document.removeEventListener('click', handleSaveGroupHierarchyClick, true);
         };
-    }, []); // 空依赖数组，只在组件挂载和卸载时运行
+    }, [treeData]); // 依赖treeData，确保使用最新的树数据
 
     return (
         <div className="pmp-dnd-tree-widget">
