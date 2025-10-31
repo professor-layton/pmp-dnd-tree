@@ -340,12 +340,26 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 console.log("Hierarchy data to be sent:", hierarchyData);
                 
                 try {
-                    // 发送POST请求到REST API
+                    // 获取Mendix session信息
+                    if (mx.session) {
+                        console.warn("Unable to retrieve session information");
+                    }
+                    const sessionToken = (mx.session as any).getSessionObjectId?.() || null;
+                    const csrfToken = (mx.session as any).getConfig?.('csrftoken') || null;
+                    if(!sessionToken || !csrfToken) {
+                        console.warn("Failed to retrieve session or CSRF token");
+                        return;
+                    }
+                    const headers: HeadersInit = {
+                        'Content-Type': 'application/json',
+                    };
+                    headers['X-Csrf-Token'] = csrfToken;
+                    headers['X-Session-Token'] = sessionToken;
+                    // 发送POST请求到REST API，包含session认证
                     const response = await fetch('/rest/egroupservice/v1/hierarchy', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: headers,
+                        credentials: 'include', // 包含cookies用于session认证
                         body: JSON.stringify({
                             hierarchy: hierarchyData
                         })
@@ -404,7 +418,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 alignItems: 'center', 
                 marginBottom: '16px',
                 backgroundColor: selectedNodeIds.length > 0 ? "#007bff" : "white",
-                padding: '8px 16px',
+                padding: '8px 1px',
                 borderRadius: '4px',
                 color: selectedNodeIds.length > 0 ? "white" : "inherit",
             }}>
