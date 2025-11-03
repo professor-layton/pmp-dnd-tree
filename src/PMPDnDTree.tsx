@@ -11,16 +11,21 @@ import { PMPDnDTreeContainerProps } from "../typings/PMPDnDTreeProps";
 import "./ui/PMPDnDTree.css";
 
 export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showEditHierarchyButton }: PMPDnDTreeContainerProps): ReactElement {
-    const [treeData, setTreeData] = useState<TreeNode[]>(sampleTreeData);
-    const [filteredTreeData, setFilteredTreeData] = useState<TreeNode[]>(sampleTreeData);
-    const [isLoadingMendixData, setIsLoadingMendixData] = useState(false);
+    const [treeData, setTreeData] = useState<TreeNode[]>([]);
+    const [filteredTreeData, setFilteredTreeData] = useState<TreeNode[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
     const [clearSelection, setClearSelection] = useState(false);
 
+    // 从示例数据加载的函数
+    const loadSampleData = useCallback(() => {
+        setTreeData(sampleTreeData);
+        setFilteredTreeData(sampleTreeData);
+        console.log("Successfully loaded sample data");
+    }, []);
+
     // 可选：从Mendix加载真实数据的函数
     const loadMendixData = useCallback(async () => {
-        setIsLoadingMendixData(true);
         try {
             const mendixGroups = await fetchGroupsFromMendix();
             const builtTreeData = buildTreeFromMendixGroups(mendixGroups);
@@ -30,10 +35,9 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         } catch (error) {
             console.error("Error loading Mendix data:", error);
             // 发生错误时回退到示例数据
-        } finally {
-            setIsLoadingMendixData(false);
+            loadSampleData();
         }
-    }, []);
+    }, [loadSampleData]);
 
     // 搜索功能
     const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,13 +111,10 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         }
     }, []);
 
-    // 可选：在组件挂载时自动加载Mendix数据
-    // 取消下面的注释来启用自动加载
-    /*
+    // 组件挂载时自动加载Mendix数据
     useEffect(() => {
         loadMendixData();
     }, [loadMendixData]);
-    */
 
     const handleNodeToggle = useCallback((nodeId: string) => {
         console.log("Node toggled:", nodeId);
@@ -395,22 +396,20 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         <div className="pmp-dnd-tree-widget">
             <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <button 
-                    onClick={loadMendixData}
-                    disabled={isLoadingMendixData}
+                    onClick={loadSampleData}
                     style={{
                         padding: '8px 16px',
-                        backgroundColor: '#007bff',
+                        backgroundColor: '#28a745',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
-                        cursor: isLoadingMendixData ? 'not-allowed' : 'pointer',
-                        opacity: isLoadingMendixData ? 0.6 : 1
+                        cursor: 'pointer'
                     }}
                 >
-                    {isLoadingMendixData ? 'Loading...' : 'Load from Mendix ATM_Company'}
+                    Load from sample data
                 </button>
                 <span style={{ fontSize: '12px', color: '#666' }}>
-                    Click to build tree from Mendix Group entities
+                    Click to load sample tree data for testing
                 </span>
             </div>
             
