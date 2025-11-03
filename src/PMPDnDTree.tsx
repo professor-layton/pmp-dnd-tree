@@ -341,15 +341,18 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 
                 try {
                     // 获取Mendix session信息
-                    if (mx.session) {
-                        console.warn("Unable to retrieve session information");
-                    }
-                    const sessionToken = (mx.session as any).getSessionObjectId?.() || null;
-                    const csrfToken = (mx.session as any).getConfig?.('csrftoken') || null;
-                    if(!sessionToken || !csrfToken) {
-                        console.warn("Failed to retrieve session or CSRF token");
+                    if (!mx.session) {
+                        console.warn("Unable to retrieve session information: mx.session is not available");
                         return;
                     }
+                    console.log("mx.session is available, attempting to get tokens");
+                    const sessionToken = (mx.session as any).getSessionObjectId?.() || null;
+                    const csrfToken = (mx.session as any).getConfig?.('csrftoken') || null;                    
+                    if(!sessionToken || !csrfToken) {
+                        console.warn(`Failed to retrieve session or CSRF token, ${sessionToken}, ${csrfToken}`);
+                        return;
+                    }
+
                     const headers: HeadersInit = {
                         'Content-Type': 'application/json',
                     };
@@ -364,7 +367,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                             hierarchy: hierarchyData
                         })
                     });
-                    
+
                     if (response.ok) {
                         const result = await response.json();
                         console.log("Successfully sent hierarchy data to API:", result);
