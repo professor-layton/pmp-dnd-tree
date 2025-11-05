@@ -488,11 +488,6 @@ export function TreeTable({
     return (
         <div className={`tree-table-container ${className} ${enableDragDrop ? 'drag-enabled' : ''}`}>
             <table className="tree-table">
-                <thead>
-                    <tr>
-                        <th className="tree-header">Group Plants</th>
-                    </tr>
-                </thead>
                 <tbody>
                     {renderData.map((item) => {
                         if (item.type === 'placeholder') {
