@@ -394,7 +394,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
 
     return (
         <div className="pmp-dnd-tree-widget">
-            <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <button 
                     onClick={loadSampleData}
                     style={{
@@ -411,7 +411,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 <span style={{ fontSize: '12px', color: '#666' }}>
                     Click to load sample tree data for testing
                 </span>
-            </div>
+            </div> */}
             
             {/* 工具栏 */}
             <div className="tree-toolbar" style={{ 
