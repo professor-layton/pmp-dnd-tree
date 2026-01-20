@@ -272,14 +272,14 @@ Place your custom CSS here
     background: none;
     border: none;
     cursor: pointer;
-    padding: 2px;
+    padding: 2px 2px 12px 0;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 20px;
     height: 20px;
-    font-size: 14px;
+    font-size: 30px;
     color: #666;
     transition: all 0.2s ease;
 }
@@ -295,7 +295,7 @@ Place your custom CSS here
 }
 
 .tree-toggle.expanded {
-    transform: rotate(0deg);
+    transform: rotate(90deg);
 }
 
 .tree-toggle.collapsed {
@@ -390,8 +390,8 @@ Place your custom CSS here
 
 .tree-node-title {
     font-weight: 700;
-    color: #003d82;
-    font-size: 18px;
+    color: #064AE4;
+    font-size: 14px;
     line-height: 1.4;
     margin-bottom: 4px;
     display: flex;
@@ -400,8 +400,8 @@ Place your custom CSS here
 }
 
 .tree-node-link {
-    color: #003d82;
-    text-decoration: none;
+    color: #064AE4;
+    text-decoration: underline;
     transition: color 0.2s ease, text-decoration 0.2s ease;
     cursor: pointer;
 }
