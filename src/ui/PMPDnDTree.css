@@ -29,7 +29,7 @@ Place your custom CSS here
     background-color: #f8f9fa;
     border-radius: 8px;
     overflow: hidden;
-    padding: 8px;
+    padding: 1px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 

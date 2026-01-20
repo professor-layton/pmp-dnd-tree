@@ -418,9 +418,9 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center', 
-                marginBottom: '16px',
+                marginBottom: '20px',
                 backgroundColor: selectedNodeIds.length > 0 ? "#007bff" : "white",
-                padding: '8px 1px',
+                padding: '0px 1px',
                 borderRadius: '4px',
                 color: selectedNodeIds.length > 0 ? "white" : "inherit",
             }}>
@@ -481,7 +481,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                     // 正常状态：搜索栏和按钮 - 使用 div 容器
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                         {/* 左侧：搜索栏 */}
-                        <div className="search-container" style={{ flex: '0 0 300px' }}>
+                        <div className="search-container pds-text-filter pds-header-filters__search" style={{ flex: '0 0 320px' }}>
                             <input
                                 type="text"
                                 placeholder="Search groups by name..."
