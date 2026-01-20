@@ -360,6 +360,12 @@ Place your custom CSS here
     gap: 4px;
 }
 
+.stat-item:last-child {
+    background-color: #F3F3F4;
+    padding: 6px 8px;
+    border-radius: 4px;
+}
+
 .stat-icon {
     font-size: 30px;
     line-height: 1;
@@ -369,18 +375,17 @@ Place your custom CSS here
     color: #333333;
 }
 
-.stat-icon svg {
-    width: 30px;
-    height: 30px;
-}
-
 .stat-count {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #333333;
     line-height: 1;
     min-width: 16px;
     text-align: center;
+}
+
+.stat-item:last-child .stat-count {
+    font-size: 14px;
 }
 
 .tree-node-title {

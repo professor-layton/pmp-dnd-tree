@@ -204,15 +204,20 @@ function TreeRow({
                             </div>
                             <div className="tree-node-stats">
                                 {typeof node.appCount === 'number' && (
-                                    <div className="stat-item pds-icon pds-icon--hierarchy-files">
+                                    <div className="stat-item" title="Apps">
                                         <span className="stat-count">{node.appCount}</span>
+                                        <span className="stat-icon pds-icon pds-icon--hierarchy-files"></span>
                                     </div>
                                 )}
                                 {typeof node.resourceCount === 'number' && (
-                                    <div className="stat-item pds-icon pds-icon--cube">
+                                    <div className="stat-item" title="Resources">
                                         <span className="stat-count">{node.resourceCount}</span>
+                                        <span className="stat-icon pds-icon pds-icon--cube"></span>
                                     </div>
                                 )}
+                                <div className="stat-item" title="Subgroups">
+                                    <span className="stat-count">{node.children ? node.children.length : 0}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
