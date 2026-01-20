@@ -1,8 +1,6 @@
 import { ReactElement, createElement, useState, useCallback, useMemo, useEffect } from "react";
 import { TreeNode, TreeTableProps, DragDropContext } from "../types/TreeTypes";
 import { canDragNode, canDropNode } from "../utils/dragDropUtils";
-import { AiOutlineAppstoreAdd } from "react-icons/ai";
-import { GrResources } from "react-icons/gr";
 
 function flattenTreeData(nodes: TreeNode[], expandedNodes: Set<string>): TreeNode[] {
     const result: TreeNode[] = [];
@@ -194,7 +192,7 @@ function TreeRow({
                                         {node.name}
                                     </a>
                                     {node.level === 0 && (
-                                        <span className="root-tag">ROOT</span>
+                                        <span className="pds-badge--info">ROOT</span>
                                     )}
                                 </div>
                                 {node.description && (
@@ -206,18 +204,12 @@ function TreeRow({
                             </div>
                             <div className="tree-node-stats">
                                 {typeof node.appCount === 'number' && (
-                                    <div className="stat-item">
-                                        <span className="stat-icon app-icon">
-                                            <AiOutlineAppstoreAdd />
-                                        </span>
+                                    <div className="stat-item pds-icon pds-icon--hierarchy-files">
                                         <span className="stat-count">{node.appCount}</span>
                                     </div>
                                 )}
                                 {typeof node.resourceCount === 'number' && (
-                                    <div className="stat-item">
-                                        <span className="stat-icon resource-icon">
-                                            <GrResources />
-                                        </span>
+                                    <div className="stat-item pds-icon pds-icon--cube">
                                         <span className="stat-count">{node.resourceCount}</span>
                                     </div>
                                 )}
