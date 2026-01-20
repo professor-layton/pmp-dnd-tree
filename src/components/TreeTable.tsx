@@ -68,7 +68,7 @@ function TreeRow({
     onDragEnd
 }: TreeRowProps): ReactElement {
     const hasChildren = node.children && node.children.length > 0;
-    const indentLevel = node.level * 20; // 20px per level
+    const indentLevel = node.level * 68; // 68px per level
     const isDraggable = enableDragDrop && canDragNode(node);
     const isDragging = dragDropContext.draggedNode?.id === node.id;
     // 移除isDropTarget，因为我们使用placeholder替代

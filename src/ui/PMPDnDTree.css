@@ -251,7 +251,7 @@ Place your custom CSS here
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 60px;
+    min-height: 84px;
 }
 
 .tree-node-controls {
@@ -279,7 +279,7 @@ Place your custom CSS here
     justify-content: center;
     width: 20px;
     height: 20px;
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     transition: all 0.2s ease;
 }
@@ -299,7 +299,7 @@ Place your custom CSS here
 }
 
 .tree-toggle.collapsed {
-    transform: rotate(-90deg);
+    transform: rotate(0deg);
 }
 
 .tree-spacer {
@@ -391,7 +391,7 @@ Place your custom CSS here
 .tree-node-title {
     font-weight: 700;
     color: #003d82;
-    font-size: 14px;
+    font-size: 18px;
     line-height: 1.4;
     margin-bottom: 4px;
     display: flex;
@@ -420,7 +420,7 @@ Place your custom CSS here
 .tree-node-description {
     font-weight: 400;
     color: #6c757d;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.4;
     margin-bottom: 4px;
 }
@@ -428,7 +428,7 @@ Place your custom CSS here
 .tree-node-uuid {
     font-weight: 400;
     color: #6c757d;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.4;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
