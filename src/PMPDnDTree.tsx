@@ -418,15 +418,14 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center', 
-                marginBottom: '20px',
-                backgroundColor: selectedNodeIds.length > 0 ? "#007bff" : "white",
-                padding: '0px 1px',
-                borderRadius: '4px',
+                marginBottom: selectedNodeIds.length > 0 ? '0px' : '20px',
+                backgroundColor: selectedNodeIds.length > 0 ? "#146FF4" : "white",
+                padding: '4px',
                 color: selectedNodeIds.length > 0 ? "white" : "inherit",
             }}>
                 {selectedNodeIds.length > 0 ? (
                     // 选择状态栏 - 使用 div 容器
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', height: '58px'}}>
                         <div style={{ 
                             fontSize: '14px', 
                             fontWeight: '500',
