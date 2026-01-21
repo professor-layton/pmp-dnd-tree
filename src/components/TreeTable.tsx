@@ -136,6 +136,7 @@ function TreeRow({
     }, [node, onRowClick, enableDragDrop]);
 
     const rowClassName = `tree-row ${isDragging ? 'dragging' : ''}`;
+    const rowWidth = `calc(100% - ${indentLevel}px)`;
 
     return (
         <tr 
@@ -148,10 +149,17 @@ function TreeRow({
             onDrop={handleDrop}
             onDragEnd={handleDragEnd}
             onClick={handleRowClick}
-            style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+            style={{
+                cursor: onRowClick ? 'pointer' : 'default',
+                width: rowWidth,
+                marginLeft: indentLevel,
+                display: 'table',
+                tableLayout: 'fixed',
+                borderSpacing: '0px'
+            }}
         >
             <td className="tree-cell tree-cell-content">
-                <div className="tree-node-wrapper" style={{ paddingLeft: indentLevel }}>
+                <div className="tree-node-wrapper">
                     <div className="tree-node-controls">
                         {enableDragDrop && (
                             <input
@@ -159,6 +167,7 @@ function TreeRow({
                                 className="tree-checkbox"
                                 checked={isSelected}
                                 onChange={handleSelect}
+                                disabled={node.level === 0}
                                 aria-label={`Select ${node.name}`}
                             />
                         )}
