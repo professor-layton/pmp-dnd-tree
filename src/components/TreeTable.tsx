@@ -178,7 +178,7 @@ function TreeRow({
                                 type="button"
                                 aria-label={isExpanded ? 'Collapse' : 'Expand'}
                             >
-                                {isExpanded ? '‹' : '›'}
+                                {isExpanded ? '›' : '›'}
                             </button>
                         )}
                         {!hasChildren && <span className="tree-spacer" />}
