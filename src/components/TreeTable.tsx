@@ -161,6 +161,11 @@ function TreeRow({
             <td className="tree-cell tree-cell-content">
                 <div className="tree-node-wrapper">
                     <div className="tree-node-controls">
+                        {isDraggable && (
+                            <span className="drag-handle" aria-label="Drag to move">
+                                ⋮⋮
+                            </span>
+                        )}
                         {enableDragDrop && (
                             <input
                                 type="checkbox"
@@ -183,11 +188,6 @@ function TreeRow({
                             </button>
                         )}
                         {!hasChildren && <span className="tree-spacer" />}
-                        {isDraggable && (
-                            <span className="drag-handle" aria-label="Drag to move">
-                                ⋮⋮
-                            </span>
-                        )}
                     </div>
                     <div className="tree-node-content">
                         <div className="tree-node-main">
