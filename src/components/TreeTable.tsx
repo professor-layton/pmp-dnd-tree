@@ -44,7 +44,7 @@ interface TreeRowProps {
     isSelected: boolean;
     enableDragDrop: boolean;
     dragDropContext: DragDropContext;
-    onDragStart: (node: TreeNode) => void;
+    onDragStart: (node: TreeNode, x: number, y: number) => void;
     onDragOver: (e: React.DragEvent, node: TreeNode) => void;
     onDragLeave: (e: React.DragEvent) => void;
     onDrop: (e: React.DragEvent, node: TreeNode) => void;
@@ -88,7 +88,13 @@ function TreeRow({
         if (isDraggable) {
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', node.id);
-            onDragStart(node);
+
+            // 创建一个空白的透明图像来隐藏浏览器默认的拖拽预览
+            const emptyImage = new Image();
+            emptyImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            e.dataTransfer.setDragImage(emptyImage, 0, 0);
+
+            onDragStart(node, e.clientX, e.clientY);
         }
     }, [isDraggable, node, onDragStart]);
 
@@ -259,6 +265,7 @@ export function TreeTable({
         dropTargetNode: null,
         dropPosition: null
     });
+    const [dragPreview, setDragPreview] = useState<{ node: TreeNode; x: number; y: number } | null>(null);
 
     // 当data变化时，更新expandedNodes为全部展开
     useEffect(() => {
@@ -313,12 +320,14 @@ export function TreeTable({
         }
     }, [onNodeSelect, onSelectionChange]);
 
-    const handleDragStart = useCallback((node: TreeNode) => {
+    const handleDragStart = useCallback((node: TreeNode, x: number, y: number) => {
         setDragDropContext({
             draggedNode: node,
             dropTargetNode: null,
             dropPosition: null
         });
+        // 初始化拖拽预览位置，使用实际的鼠标位置
+        setDragPreview({ node, x, y });
     }, []);
 
     const handleDragOver = useCallback((e: React.DragEvent, node: TreeNode) => {
@@ -426,7 +435,27 @@ export function TreeTable({
             dropTargetNode: null,
             dropPosition: null
         });
+        setDragPreview(null);
     }, []);
+
+    // 监听鼠标移动更新预览位置
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent | DragEvent) => {
+            if (dragPreview && e.clientX !== 0 && e.clientY !== 0) {
+                setDragPreview(prev => prev ? { ...prev, x: e.clientX, y: e.clientY } : null);
+            }
+        };
+
+        if (dragPreview) {
+            // 同时监听 drag 和 mousemove 事件
+            document.addEventListener('drag', handleMouseMove as EventListener);
+            document.addEventListener('mousemove', handleMouseMove);
+            return () => {
+                document.removeEventListener('drag', handleMouseMove as EventListener);
+                document.removeEventListener('mousemove', handleMouseMove);
+            };
+        }
+    }, [dragPreview]);
 
     const flattenedData = flattenTreeData(data, expandedNodes);
 
@@ -493,8 +522,9 @@ export function TreeTable({
     const renderData = generateRenderData();
 
     return (
-        <div className={`tree-table-container ${className} ${enableDragDrop ? 'drag-enabled' : ''}`}>
-            <table className="tree-table">
+        <div style={{ position: 'relative' }}>
+            <div className={`tree-table-container ${className} ${enableDragDrop ? 'drag-enabled' : ''}`}>
+                <table className="tree-table">
                 <tbody>
                     {renderData.map((item) => {
                         if (item.type === 'placeholder') {
@@ -525,6 +555,46 @@ export function TreeTable({
                     })}
                 </tbody>
             </table>
+        </div>
+        {dragPreview && (
+            <div
+                style={{
+                    position: 'fixed',
+                    left: dragPreview.x + 10,
+                    top: dragPreview.y + 10,
+                    pointerEvents: 'none',
+                    zIndex: 9999,
+                    opacity: 0.9,
+                    width: '400px'
+                }}
+            >
+                <table className="tree-table" style={{ width: '400px' }}>
+                    <tbody>
+                        <tr className="tree-row" style={{ display: 'table', tableLayout: 'fixed', borderSpacing: '0px', backgroundColor: 'rgba(248, 249, 250, 0.9)', width: '400px' }}>
+                            <td className="tree-cell tree-cell-content">
+                                <div className="tree-node-wrapper">
+                                    <div className="tree-node-controls">
+                                        <span className="drag-handle" style={{ backgroundColor: '#298EFB', color: 'white', borderRadius: '4px', padding: '4px 2px' }}>⋮⋮</span>
+                                    </div>
+                                    <div className="tree-node-content">
+                                        <div className="tree-node-main">
+                                            <div className="tree-node-info">
+                                                <div className="tree-node-title">
+                                                    <span className="tree-node-link">{dragPreview.node.name}</span>
+                                                </div>
+                                                <div style={{ fontSize: '14px', color: '#6c757d', marginTop: '4px' }}>
+                                                    {dragPreview.node.children ? dragPreview.node.children.length : 0} nested group{((dragPreview.node.children?.length || 0) !== 1) ? 's' : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        )}
         </div>
     );
 }
