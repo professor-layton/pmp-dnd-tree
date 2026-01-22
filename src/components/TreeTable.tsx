@@ -71,8 +71,7 @@ function TreeRow({
     const indentLevel = node.level * 48; // 48px per level
     const isDraggable = enableDragDrop && canDragNode(node);
     const isDragging = dragDropContext.draggedNode?.id === node.id;
-    // 移除isDropTarget，因为我们使用placeholder替代
-    // const isDropTarget = dragDropContext.dropTargetNode?.id === node.id;
+    const isDropTarget = dragDropContext.dropTargetNode?.id === node.id && dragDropContext.dropPosition === 'inside';
 
     const handleToggle = useCallback(() => {
         if (hasChildren) {
@@ -161,7 +160,9 @@ function TreeRow({
                 marginLeft: indentLevel,
                 display: 'table',
                 tableLayout: 'fixed',
-                borderSpacing: '0px'
+                borderSpacing: '0px',
+                backgroundColor: isDropTarget ? '#F7F7F7' : undefined,
+                border: isDropTarget ? '2px dashed' : undefined
             }}
         >
             <td className="tree-cell tree-cell-content">
@@ -330,43 +331,12 @@ export function TreeTable({
         setDragPreview({ node, x, y });
     }, []);
 
-    const handleDragOver = useCallback((e: React.DragEvent, node: TreeNode) => {
+    const handleDragOver = useCallback((_e: React.DragEvent, node: TreeNode) => {
         if (!dragDropContext.draggedNode) return;
         
-        // 确定拖拽位置
-        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        const y = e.clientY - rect.top;
-        const height = rect.height;
-        
-        let position: 'before' | 'after' | 'inside' = 'inside';
-        
-        // 特殊处理：如果拖拽的是子节点到其父节点，应该保持为子节点关系
-        const isChildToParent = dragDropContext.draggedNode.parentId === node.id;
-        
-        if (isChildToParent) {
-            // 子节点拖拽到父节点时，所有区域都应该被视为inside
-            position = 'inside';
-        } else {
-            // 对于Root节点（level 0），大部分区域应该是inside
-            if (node.level === 0) {
-                if (y < height * 0.2) {
-                    position = 'before';
-                } else if (y > height * 0.8) {
-                    position = 'after';
-                } else {
-                    position = 'inside'; // Root节点的中间大部分区域都是inside
-                }
-            } else {
-                // 对于非Root节点，使用正常的判断逻辑
-                if (y < height * 0.25) {
-                    position = 'before';
-                } else if (y > height * 0.75) {
-                    position = 'after';
-                } else {
-                    position = 'inside';
-                }
-            }
-        }
+        // 新逻辑：只要 preview 的中心点（50% 高度）在某个 row 内部，就将该 row 设为 drop target
+        // 所有情况下都使用 'inside' position，表示成为 subgroup
+        const position: 'inside' = 'inside';
         
         if (canDropNode(dragDropContext.draggedNode, node, position)) {
             setDragDropContext(prev => ({
@@ -426,6 +396,7 @@ export function TreeTable({
             dropTargetNode: null,
             dropPosition: null
         });
+        setDragPreview(null);
     }, [dragDropContext, onNodeMove]);
 
     // 添加dragend事件处理，确保拖拽状态总是被重置
@@ -459,100 +430,30 @@ export function TreeTable({
 
     const flattenedData = flattenTreeData(data, expandedNodes);
 
-    // 创建Placeholder组件
-    const renderPlaceholder = (position: 'before' | 'after' | 'inside', targetNode: TreeNode) => {
-        const placeholderClass = `tree-placeholder ${position}`;
-        const indentLevel = position === 'inside' ? (targetNode.level + 1) * 20 : targetNode.level * 20;
-        
-        return (
-            <tr key={`placeholder-${targetNode.id}-${position}`} className="tree-placeholder-row">
-                <td className="tree-cell">
-                    <div 
-                        className={placeholderClass}
-                        style={{ marginLeft: indentLevel }}
-                    />
-                </td>
-            </tr>
-        );
-    };
-
-    // 生成带placeholder的渲染数据
-    const generateRenderData = () => {
-        const result: Array<{ type: 'node' | 'placeholder', data: TreeNode | { position: 'before' | 'after' | 'inside', targetNode: TreeNode }, key: string }> = [];
-        
-        flattenedData.forEach((node) => {
-            // 检查是否需要在此节点前显示placeholder
-            if (dragDropContext.dropTargetNode?.id === node.id && dragDropContext.dropPosition === 'before') {
-                result.push({
-                    type: 'placeholder',
-                    data: { position: 'before', targetNode: node },
-                    key: `placeholder-before-${node.id}`
-                });
-            }
-            
-            // 添加节点本身
-            result.push({
-                type: 'node',
-                data: node,
-                key: node.id
-            });
-            
-            // 检查是否需要显示inside placeholder
-            if (dragDropContext.dropTargetNode?.id === node.id && dragDropContext.dropPosition === 'inside') {
-                result.push({
-                    type: 'placeholder',
-                    data: { position: 'inside', targetNode: node },
-                    key: `placeholder-inside-${node.id}`
-                });
-            }
-            
-            // 检查是否需要在此节点后显示placeholder
-            if (dragDropContext.dropTargetNode?.id === node.id && dragDropContext.dropPosition === 'after') {
-                result.push({
-                    type: 'placeholder',
-                    data: { position: 'after', targetNode: node },
-                    key: `placeholder-after-${node.id}`
-                });
-            }
-        });
-        
-        return result;
-    };
-
-    const renderData = generateRenderData();
-
     return (
         <div style={{ position: 'relative' }}>
             <div className={`tree-table-container ${className} ${enableDragDrop ? 'drag-enabled' : ''}`}>
                 <table className="tree-table">
                 <tbody>
-                    {renderData.map((item) => {
-                        if (item.type === 'placeholder') {
-                            const { position, targetNode } = item.data as { position: 'before' | 'after' | 'inside', targetNode: TreeNode };
-                            return renderPlaceholder(position, targetNode);
-                        } else {
-                            const node = item.data as TreeNode;
-                            return (
-                                <TreeRow
-                                    key={node.id}
-                                    node={node}
-                                    onToggle={handleToggle}
-                                    onSelect={handleSelect}
-                                    onNodeClick={onNodeClick}
-                                    onRowClick={onRowClick}
-                                    isExpanded={expandedNodes.has(node.id)}
-                                    isSelected={selectedNodes.has(node.id)}
-                                    enableDragDrop={enableDragDrop}
-                                    dragDropContext={dragDropContext}
-                                    onDragStart={handleDragStart}
-                                    onDragOver={handleDragOver}
-                                    onDragLeave={handleDragLeave}
-                                    onDrop={handleDrop}
-                                    onDragEnd={handleDragEnd}
-                                />
-                            );
-                        }
-                    })}
+                    {flattenedData.map((node) => (
+                        <TreeRow
+                            key={node.id}
+                            node={node}
+                            onToggle={handleToggle}
+                            onSelect={handleSelect}
+                            onNodeClick={onNodeClick}
+                            onRowClick={onRowClick}
+                            isExpanded={expandedNodes.has(node.id)}
+                            isSelected={selectedNodes.has(node.id)}
+                            enableDragDrop={enableDragDrop}
+                            dragDropContext={dragDropContext}
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onDragEnd={handleDragEnd}
+                        />
+                    ))}
                 </tbody>
             </table>
         </div>
