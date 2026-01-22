@@ -568,6 +568,26 @@ export function TreeTable({
                     width: '400px'
                 }}
             >
+                <div
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        backgroundColor: '#0123C6',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '12px',
+                        fontWeight: 400,
+                        lineHeight: '1'
+                    }}
+                >
+                    {(dragPreview.node.children ? dragPreview.node.children.length : 0) + 1}
+                </div>
                 <table className="tree-table" style={{ width: '400px' }}>
                     <tbody>
                         <tr className="tree-row" style={{ display: 'table', tableLayout: 'fixed', borderSpacing: '0px', backgroundColor: 'rgba(248, 249, 250, 0.9)', width: '400px' }}>
