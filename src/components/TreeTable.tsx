@@ -175,6 +175,7 @@ function TreeRow({
                             <button
                                 className={`tree-toggle ${isExpanded ? 'expanded' : 'collapsed'}`}
                                 onClick={handleToggle}
+                                style={{ width: '20px', height: '20px' }}
                                 type="button"
                                 aria-label={isExpanded ? 'Collapse' : 'Expand'}
                             >
