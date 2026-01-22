@@ -134,7 +134,7 @@ Place your custom CSS here
 /* 拖拽时的 drag handle 样式 */
 .tree-row.dragging .drag-handle {
     background-color: #298EFB;
-    color: white;
+    color: white !important;
     border-radius: 4px;
     padding: 4px 2px;
 }
