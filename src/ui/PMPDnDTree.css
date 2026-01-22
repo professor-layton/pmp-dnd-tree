@@ -114,7 +114,7 @@ Place your custom CSS here
 
 /* 拖拽时的视觉反馈优化 */
 .tree-row.dragging {
-    opacity: 0.5;
+    opacity: 0.9;
     background-color: #f8f9fa !important;
     border: 2px solid #298EFB !important;
     border-radius: 6px;
@@ -128,7 +128,7 @@ Place your custom CSS here
 .tree-row.dragging .tree-node-description,
 .tree-row.dragging .stat-icon,
 .tree-row.dragging .stat-count {
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 /* 拖拽时的 drag handle 样式 */
