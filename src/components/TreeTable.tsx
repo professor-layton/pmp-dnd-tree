@@ -162,7 +162,7 @@ function TreeRow({
                 tableLayout: 'fixed',
                 borderSpacing: '0px',
                 backgroundColor: isDropTarget ? '#F7F7F7' : undefined,
-                border: isDropTarget ? '2px dashed' : undefined
+                border: isDropTarget ? '2px dashed #298EFB' : undefined
             }}
         >
             <td className="tree-cell tree-cell-content">
