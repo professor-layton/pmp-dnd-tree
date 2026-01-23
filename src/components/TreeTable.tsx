@@ -2,14 +2,36 @@ import { ReactElement, createElement, useState, useCallback, useMemo, useEffect 
 import { TreeNode, TreeTableProps, DragDropContext } from "../types/TreeTypes";
 import { canDragNode, canDropNode } from "../utils/dragDropUtils";
 
-function flattenTreeData(nodes: TreeNode[], expandedNodes: Set<string>): TreeNode[] {
-    const result: TreeNode[] = [];
-    
+function flattenTreeData(nodes: TreeNode[], expandedNodes: Set<string>, showAllChildrenNodes: Set<string>): Array<TreeNode | { type: 'show-all', parentNode: TreeNode, hiddenCount: number }> {
+    const result: Array<TreeNode | { type: 'show-all', parentNode: TreeNode, hiddenCount: number }> = [];
+
     function traverse(nodeArray: TreeNode[]) {
         for (const node of nodeArray) {
             result.push(node);
             if (node.children && expandedNodes.has(node.id)) {
-                traverse(node.children);
+                // 获取直接子节点（level = node.level + 1）
+                const directChildren = node.children.filter(child => child.level === node.level + 1);
+                const shouldShowAll = showAllChildrenNodes.has(node.id);
+
+                // 根节点（level 0）始终显示所有直接子节点，不适用"全部展开"逻辑
+                if (node.level > 0 && directChildren.length > 3 && !shouldShowAll) {
+                    // 只显示前3个直接子节点
+                    const visibleChildren = directChildren.slice(0, 3);
+                    const hiddenCount = directChildren.length - 3;
+
+                    // 添加前3个子节点
+                    traverse(visibleChildren);
+
+                    // 添加"全部展开"行
+                    result.push({
+                        type: 'show-all',
+                        parentNode: node,
+                        hiddenCount: hiddenCount
+                    });
+                } else {
+                    // 显示所有子节点（根节点或子节点数量<=3或已点击显示全部）
+                    traverse(node.children);
+                }
             }
         }
     }
@@ -244,6 +266,69 @@ function TreeRow({
     );
 }
 
+interface ShowAllRowProps {
+    parentNode: TreeNode;
+    hiddenCount: number;
+    onShowAll: (parentNodeId: string) => void;
+}
+
+function ShowAllRow({ parentNode, hiddenCount, onShowAll }: ShowAllRowProps): ReactElement {
+    const indentLevel = (parentNode.level + 1) * 48; // 与直接子节点相同的缩进
+    const rowWidth = `calc(100% - ${indentLevel}px)`;
+
+    const handleClick = useCallback(() => {
+        onShowAll(parentNode.id);
+    }, [parentNode.id, onShowAll]);
+
+    return (
+        <tr
+            className="tree-row show-all-row"
+            style={{
+                width: rowWidth,
+                marginLeft: indentLevel,
+                display: 'table',
+                tableLayout: 'fixed',
+                borderSpacing: '0px'
+            }}
+        >
+            <td className="tree-cell tree-cell-content">
+                <div className="tree-node-wrapper" style={{ minHeight: '32px', paddingTop: '4px' }}>
+                    <div className="tree-node-controls">
+                        <button
+                            className="show-all-button"
+                            onClick={handleClick}
+                            type="button"
+                            aria-label="Show all nested groups"
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <span className="pds-icon pds-icon--three-dots-menu-horizontal" style={{ color: '#064AE4' }}></span>
+                        </button>
+                    </div>
+                    <div className="tree-node-content">
+                        <div className="tree-node-main">
+                            <div className="tree-node-info">
+                                <div className="tree-node-title">
+                                    <span style={{ fontSize: '14px', color: '#064AE4', fontWeight: 400 }}>
+                                        See All Nested Groups ({hiddenCount})
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    );
+}
+
 export function TreeTable({ 
     data, 
     onNodeToggle, 
@@ -261,6 +346,7 @@ export function TreeTable({
     
     const [expandedNodes, setExpandedNodes] = useState<Set<string>>(defaultExpandedNodes);
     const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
+    const [showAllChildrenNodes, setShowAllChildrenNodes] = useState<Set<string>>(new Set());
     const [dragDropContext, setDragDropContext] = useState<DragDropContext>({
         draggedNode: null,
         dropTargetNode: null,
@@ -428,32 +514,53 @@ export function TreeTable({
         }
     }, [dragPreview]);
 
-    const flattenedData = flattenTreeData(data, expandedNodes);
+    const handleShowAll = useCallback((parentNodeId: string) => {
+        setShowAllChildrenNodes(prev => {
+            const newSet = new Set(prev);
+            newSet.add(parentNodeId);
+            return newSet;
+        });
+    }, []);
+
+    const flattenedData = flattenTreeData(data, expandedNodes, showAllChildrenNodes);
 
     return (
         <div style={{ position: 'relative' }}>
             <div className={`tree-table-container ${className} ${enableDragDrop ? 'drag-enabled' : ''}`}>
                 <table className="tree-table">
                 <tbody>
-                    {flattenedData.map((node) => (
-                        <TreeRow
-                            key={node.id}
-                            node={node}
-                            onToggle={handleToggle}
-                            onSelect={handleSelect}
-                            onNodeClick={onNodeClick}
-                            onRowClick={onRowClick}
-                            isExpanded={expandedNodes.has(node.id)}
-                            isSelected={selectedNodes.has(node.id)}
-                            enableDragDrop={enableDragDrop}
-                            dragDropContext={dragDropContext}
-                            onDragStart={handleDragStart}
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            onDragEnd={handleDragEnd}
-                        />
-                    ))}
+                    {flattenedData.map((item) => {
+                        if (typeof item === 'object' && 'type' in item && item.type === 'show-all') {
+                            return (
+                                <ShowAllRow
+                                    key={`show-all-${item.parentNode.id}`}
+                                    parentNode={item.parentNode}
+                                    hiddenCount={item.hiddenCount}
+                                    onShowAll={handleShowAll}
+                                />
+                            );
+                        }
+                        const node = item as TreeNode;
+                        return (
+                            <TreeRow
+                                key={node.id}
+                                node={node}
+                                onToggle={handleToggle}
+                                onSelect={handleSelect}
+                                onNodeClick={onNodeClick}
+                                onRowClick={onRowClick}
+                                isExpanded={expandedNodes.has(node.id)}
+                                isSelected={selectedNodes.has(node.id)}
+                                enableDragDrop={enableDragDrop}
+                                dragDropContext={dragDropContext}
+                                onDragStart={handleDragStart}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                onDragEnd={handleDragEnd}
+                            />
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
