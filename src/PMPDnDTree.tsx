@@ -79,10 +79,10 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
                 actionname: "ATM_Company.ACT_EnhancedGroup_New",
             },
             callback: (result) => {
-                console.log("Microflow executed successfully:", result);
+                console.log("Microflow Group_New executed successfully: ", result);
             },
             error: (error) => {
-                console.error("Error executing microflow:", error);
+                console.error("Error executing microflow Group_New: ", error);
             }
         });
     }, []);
@@ -90,7 +90,7 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
     // Edit Group Hierarchy 按钮处理
     const handleEditHierarchy = useCallback(() => {
         console.log("Edit Group Hierarchy clicked");
-        
+        /*
         if (mx.ui.openForm) {
             const formPath = "ATM_Company/EnhancedGroup_Edit.page.xml";
             try {
@@ -109,6 +109,19 @@ export function PMPDnDTree({ sampleText, enableDragDrop, showCreateButton, showE
         } else {
             console.warn("Mendix platform API not available");
         }
+        */
+        mx.data.action({
+            params: {
+                actionname: "ATM_Company.ACT_GroupHierarchy_Edit",
+            },
+            callback: (result) => {
+                console.log("Microflow GroupHierarchy_Edit executed successfully: ", result);
+            },
+            error: (error) => {
+                console.error("Error executing microflow GroupHierarchy_Edit:", error);
+            }
+        });
+
     }, []);
 
     // 组件挂载时自动加载Mendix数据
